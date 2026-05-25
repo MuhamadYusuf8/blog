@@ -16,7 +16,7 @@ export default async function SettingsPage() {
     .eq('id', 1)
     .single()
 
-  const backgroundType = (settings?.background_type ?? 'color') as 'image' | 'color' | 'default'
+  const backgroundType = (settings?.background_type ?? 'color') as 'image' | 'color'
   const backgroundValue = settings?.background_value ?? '#1a1a2e'
 
   return (

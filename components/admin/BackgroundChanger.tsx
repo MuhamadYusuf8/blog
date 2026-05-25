@@ -21,7 +21,7 @@ const COLOR_PRESETS = [
 ]
 
 interface BackgroundChangerProps {
-  currentType: 'image' | 'color'
+  currentType: 'image' | 'color' | 'default' | string
   currentValue: string
 }
 

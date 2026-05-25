@@ -27,7 +27,7 @@ interface BackgroundChangerProps {
 
 export default function BackgroundChanger({ currentType, currentValue }: BackgroundChangerProps) {
   const isDefault = currentType === 'color' && (!currentValue || currentValue === '#0f0c29' || currentValue === '')
-  const initialTab = isDefault ? 'default' : currentType
+  const initialTab = (isDefault ? 'default' : currentType) as TabType
   const [activeTab, setActiveTab] = useState<TabType>(initialTab)
   const [selectedColor, setSelectedColor] = useState(currentType === 'color' && !isDefault ? currentValue : '#f8fafc')
   const [selectedImageUrl, setSelectedImageUrl] = useState(currentType === 'image' ? currentValue : '')

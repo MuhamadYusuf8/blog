@@ -1,0 +1,153 @@
+/* app/globals.css
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Pearl White Minimalist Glassmorphism — base styles & Tailwind directives.
+ * Component-level styling lives in Tailwind utilities / the glass plugin.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS custom properties ─────────────────────────────────────────────────── */
+:root {
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-sans:    'DM Sans', system-ui, sans-serif;
+
+  --glass-padding-sm: 1.25rem;
+  --glass-padding-md: 1.5rem;
+  --glass-padding-lg: 2rem;
+
+  /* Pearl White palette */
+  --color-pearl-base:   #ffffff;
+  --color-pearl-soft:   #f8fafc;
+  --color-pearl-subtle: #f4f4f5;
+
+  /* Accent — warm amber, used sparingly */
+  --color-accent:      #f59e0b;
+  --color-accent-soft: rgba(251,191,36,0.10);
+}
+
+/* ── Base resets ───────────────────────────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    /* Pearl White default — overridden by layout.tsx inline style from DB */
+    background-color: #ffffff;
+    background-image:
+      radial-gradient(ellipse 90% 65% at 15% 5%,  #f8fafc 0%, transparent 55%),
+      radial-gradient(ellipse 75% 55% at 88% 8%,  #ffffff 0%, transparent 50%),
+      radial-gradient(ellipse 65% 75% at 50% 102%, #f4f4f5 0%, transparent 55%);
+  }
+
+  /* Focus ring — slate, not amber, for the clean pearl aesthetic */
+  :focus-visible {
+    outline:        2px solid rgba(100, 116, 139, 0.5);
+    outline-offset: 3px;
+    border-radius:  6px;
+  }
+
+  ul[role='list'],
+  ol[role='list'] {
+    list-style: none;
+    padding: 0;
+    margin:  0;
+  }
+
+  img {
+    max-width: 100%;
+    height:    auto;
+    display:   block;
+    overflow:  hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family:    var(--font-display);
+    color:          #0f172a;
+    letter-spacing: -0.025em;
+    line-height:    1.2;
+  }
+
+  p {
+    line-height: 1.75;
+    color:       #334155;
+  }
+
+  a {
+    text-decoration: none;
+    color:           inherit;
+  }
+
+  /* Pearl white selection */
+  ::selection {
+    background-color: rgba(203, 213, 225, 0.35);
+    color:            #0f172a;
+  }
+}
+
+/* ── Glass component overrides ─────────────────────────────────────────────── */
+@layer components {
+
+  /* Hover states — lift the panel elegantly */
+  .glass-panel:hover {
+    box-shadow: 0 20px 60px -15px rgba(0,0,0,0.07), 0 4px 16px -4px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,1);
+  }
+
+  .glass-card:hover {
+    box-shadow: 0 12px 36px -8px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+
+  /* ── Scrollbar — ultra-minimal ──────────────────────────────────── */
+  ::-webkit-scrollbar       { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background:    rgba(148, 163, 184, 0.30);
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.55); }
+}
+
+/* ── Utilities ─────────────────────────────────────────────────────────────── */
+@layer utilities {
+  .content-visibility-auto { content-visibility: auto; }
+
+  .line-clamp-2 {
+    display:            -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow:           hidden;
+  }
+
+  .line-clamp-3 {
+    display:            -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow:           hidden;
+  }
+
+  .sr-only {
+    position:    absolute;
+    width:       1px;
+    height:      1px;
+    padding:     0;
+    margin:      -1px;
+    overflow:    hidden;
+    clip:        rect(0,0,0,0);
+    white-space: nowrap;
+    border:      0;
+  }
+
+  /* Text balance for headings */
+  .text-balance { text-wrap: balance; }
+
+  /* GPU-composited layer hint for animated elements */
+  .will-change-transform { will-change: transform; }
+}

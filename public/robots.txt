@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Disallow all admin routes
+Disallow: /admin/
+Disallow: /api/preview
+Disallow: /api/exit-preview
+
+# Sitemap
+# NOTE: Replace 'https://kakrahma.com' with your actual deployed domain (NEXT_PUBLIC_SITE_URL)
+Sitemap: https://kakrahma.com/sitemap.xml

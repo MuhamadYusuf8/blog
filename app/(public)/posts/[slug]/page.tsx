@@ -61,7 +61,7 @@ export async function generateMetadata({
     .eq('slug', params.slug)
     .eq('status', 'published')
     .is('deleted_at', null)
-    .single()
+    .maybeSingle()
 
   if (!post) {
     return { title: 'Postingan Tidak Ditemukan' }
@@ -135,7 +135,7 @@ export default async function PostPage({
       .select('*')
       .eq('slug', params.slug)
       .is('deleted_at', null) // RULE 4: still required even in draft mode
-      .single()
+      .maybeSingle()
 
     post = data ?? null
   } else {
@@ -151,7 +151,7 @@ export default async function PostPage({
       .eq('slug', params.slug)
       .eq('status', 'published')
       .is('deleted_at', null)
-      .single()
+      .maybeSingle()
 
     post = data ?? null
   }
@@ -178,7 +178,7 @@ export default async function PostPage({
   // ------------------------------------------------------------------
   // RULE 3: sanitizeHtml MUST be called before dangerouslySetInnerHTML.
   //         This applies to BOTH the public path AND the Draft Mode path.
-  //         Sanitisation is never conditional or skipped.2
+  //         Sanitisation is never conditional or skipped.
   // ------------------------------------------------------------------
   const sanitizedHtml = sanitizeHtml(post.content_html ?? '')
 

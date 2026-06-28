@@ -30,12 +30,18 @@ import DOMPurify from 'isomorphic-dompurify'
  * @returns A sanitised HTML string safe for use with dangerouslySetInnerHTML
  */
 export function sanitizeHtml(html: string): string {
-  return DOMPurify.sanitize(html ?? '', {
-    // Use the full HTML profile (allows all standard HTML elements and attrs)
-    USE_PROFILES: { html: true },
-    // Explicitly forbid tags that could execute scripts or load external content
-    FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form'],
-    // Explicitly forbid event handler attributes (inline JavaScript vectors)
-    FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover'],
-  })
+  if (!html) return ''
+  try {
+    return DOMPurify.sanitize(html, {
+      // Use the full HTML profile (allows all standard HTML elements and attrs)
+      USE_PROFILES: { html: true },
+      // Explicitly forbid tags that could execute scripts or load external content
+      FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form'],
+      // Explicitly forbid event handler attributes (inline JavaScript vectors)
+      FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover'],
+    })
+  } catch (e) {
+    console.error('Sanitize HTML error:', e)
+    return html
+  }
 }

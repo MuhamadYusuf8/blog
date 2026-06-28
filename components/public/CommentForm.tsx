@@ -56,16 +56,16 @@ export function CommentForm({ postId }: CommentFormProps) {
 
   if (submitted) {
     return (
-      <div className="glass-card border border-emerald-200 bg-emerald-50/30 rounded-xl p-6 text-center">
+      <div className="border border-emerald-500/30 bg-emerald-500/10 backdrop-blur-xl rounded-2xl p-6 text-center">
         <div className="text-3xl mb-3" aria-hidden="true">✅</div>
-        <h3 className="text-slate-800 font-semibold mb-1">Komentar Terkirim!</h3>
-        <p className="text-slate-500 text-sm">
+        <h3 className="text-white font-semibold mb-1">Komentar Terkirim!</h3>
+        <p className="text-slate-300 text-sm">
           Komentar Anda sedang menunggu moderasi dan akan segera ditampilkan.
         </p>
         <button
           type="button"
           onClick={() => setSubmitted(false)}
-          className="mt-4 text-amber-600 hover:text-amber-700 text-sm font-medium underline underline-offset-2 transition-colors duration-200"
+          className="mt-4 text-violet-400 hover:text-violet-300 text-sm font-medium underline underline-offset-2 transition-colors duration-200"
         >
           Tambah komentar lain
         </button>
@@ -74,8 +74,11 @@ export function CommentForm({ postId }: CommentFormProps) {
   }
 
   return (
-    <div className="glass-card p-6 md:p-8 rounded-2xl shadow-sm">
-      <h3 className="text-slate-800 font-display font-semibold text-lg mb-5 flex items-center gap-2">
+    <div 
+      className="p-6 md:p-8 rounded-2xl border border-white/10 backdrop-blur-xl"
+      style={{ background: 'rgba(255,255,255,0.03)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}
+    >
+      <h3 className="text-white font-display font-semibold text-lg mb-5 flex items-center gap-2">
         <span aria-hidden="true">✍️</span> Tinggalkan Komentar
       </h3>
 
@@ -105,9 +108,9 @@ export function CommentForm({ postId }: CommentFormProps) {
           <div>
             <label
               htmlFor="commenter_name"
-              className="block text-[13px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5"
+              className="block text-[13px] font-semibold text-slate-300 uppercase tracking-wider mb-1.5"
             >
-              Nama <span className="text-rose-500" aria-label="wajib diisi">*</span>
+              Nama <span className="text-rose-400" aria-label="wajib diisi">*</span>
             </label>
             <input
               type="text"
@@ -120,10 +123,10 @@ export function CommentForm({ postId }: CommentFormProps) {
               disabled={isSubmitting}
               className="
                 w-full px-4 py-2.5 rounded-xl
-                bg-white/70 border border-slate-200
-                text-slate-800 placeholder-slate-400
-                text-sm shadow-sm
-                focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400
+                bg-white/[0.04] border border-white/10
+                text-white placeholder-slate-500
+                text-sm
+                focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/60
                 disabled:opacity-50 disabled:cursor-not-allowed
                 transition-all duration-200
               "
@@ -134,9 +137,9 @@ export function CommentForm({ postId }: CommentFormProps) {
           <div>
             <label
               htmlFor="comment_body"
-              className="block text-[13px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5"
+              className="block text-[13px] font-semibold text-slate-300 uppercase tracking-wider mb-1.5"
             >
-              Komentar <span className="text-rose-500" aria-label="wajib diisi">*</span>
+              Komentar <span className="text-rose-400" aria-label="wajib diisi">*</span>
             </label>
             <textarea
               id="comment_body"
@@ -149,10 +152,10 @@ export function CommentForm({ postId }: CommentFormProps) {
               disabled={isSubmitting}
               className="
                 w-full px-4 py-2.5 rounded-xl
-                bg-white/70 border border-slate-200
-                text-slate-800 placeholder-slate-400
-                text-sm leading-relaxed resize-none shadow-sm
-                focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400
+                bg-white/[0.04] border border-white/10
+                text-white placeholder-slate-500
+                text-sm leading-relaxed resize-none
+                focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/60
                 disabled:opacity-50 disabled:cursor-not-allowed
                 transition-all duration-200
               "
@@ -161,15 +164,17 @@ export function CommentForm({ postId }: CommentFormProps) {
           </div>
 
           {/* Submit button */}
-          <Button
+          <button
             type="submit"
-            variant="primary"
-            isLoading={isSubmitting}
             disabled={isSubmitting}
-            className="self-start"
+            className="self-start px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50"
+            style={{
+              background: 'linear-gradient(135deg, #7c3aed 0%, #ec4899 100%)',
+              boxShadow: '0 0 20px rgba(124,58,237,0.35)',
+            }}
           >
             {isSubmitting ? 'Mengirim...' : 'Kirim Komentar'}
-          </Button>
+          </button>
 
           <p className="text-slate-400 text-xs font-medium">
             Komentar Anda akan ditampilkan setelah dimoderasi.

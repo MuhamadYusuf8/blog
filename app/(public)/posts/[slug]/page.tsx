@@ -199,10 +199,10 @@ export default async function PostPage({
           
           {/* ── Main Column ─────────────────────────────────────────────── */}
           <div className="flex flex-col gap-8 min-w-0">
-            <article className="glass-panel overflow-hidden animate-fade-in">
+            <article className="rounded-3xl border border-white/10 overflow-hidden backdrop-blur-2xl animate-fade-in" style={{ background: 'rgba(255,255,255,0.03)', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
           {/* Cover Image */}
           {post.cover_image_url && (
-            <div className="relative w-full aspect-video overflow-hidden rounded-t-2xl">
+            <div className="relative w-full aspect-video overflow-hidden rounded-t-3xl">
               <Image
                 src={post.cover_image_url}
                 alt={`Cover image for ${post.title}`}
@@ -231,12 +231,12 @@ export default async function PostPage({
             </div>
 
             {/* Title */}
-            <h1 className="text-slate-900 font-display font-bold text-3xl md:text-[2.8rem] leading-tight tracking-tight text-balance">
+            <h1 className="text-white font-display font-bold text-3xl md:text-[2.8rem] leading-tight tracking-tight text-balance">
               {post.title}
             </h1>
 
             {/* Author + stats row */}
-            <div className="flex items-center gap-4 flex-wrap text-slate-400 text-[12.5px] border-b border-slate-200/70 pb-5">
+            <div className="flex items-center gap-4 flex-wrap text-slate-400 text-[12.5px] border-b border-white/10 pb-5">
               <span className="flex items-center gap-1.5">
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="8" cy="8" r="6.5" />
@@ -261,13 +261,13 @@ export default async function PostPage({
              * user-submitted HTML content.
              */}
             <div
-              className="prose prose-slate prose-lg max-w-none text-slate-600 prose-headings:text-slate-900 prose-headings:font-display prose-headings:tracking-tight prose-a:text-amber-600 hover:prose-a:text-amber-700 prose-img:rounded-xl prose-img:shadow-sm"
+              className="prose prose-invert prose-lg max-w-none text-slate-300 prose-headings:text-white prose-headings:font-display prose-headings:tracking-tight prose-a:text-violet-400 hover:prose-a:text-violet-300 prose-img:rounded-xl prose-img:border prose-img:border-white/10"
               dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
             />
 
             {/* Tags */}
             {post.tags && post.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-200/70">
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-white/10">
                 <span className="text-slate-400 text-[12px] font-medium self-center mr-1">Tags:</span>
                 {post.tags.map((tag) => (
                   <Link
@@ -277,9 +277,9 @@ export default async function PostPage({
                     <span
                       className="text-[11.5px] font-medium px-2.5 py-1 rounded-md transition-colors"
                       style={{
-                        background: 'rgba(241,245,249,0.70)',
-                        border: '1px solid rgba(226,232,240,0.80)',
-                        color: '#64748b',
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: '#c4b5fd',
                       }}
                     >
                       #{tag}
@@ -294,11 +294,11 @@ export default async function PostPage({
               <div 
                 className="mt-4 p-5 rounded-2xl flex items-center justify-between gap-4"
                 style={{
-                  background: 'rgba(248,250,252,0.60)',
-                  border: '1px solid rgba(226,232,240,0.60)',
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.08)',
                 }}
               >
-                <span className="text-[12px] font-semibold text-slate-500 uppercase tracking-widest">Bagikan Tulisan</span>
+                <span className="text-[12px] font-semibold text-slate-400 uppercase tracking-widest">Bagikan Tulisan</span>
                 <ShareButtons url={postUrl} title={post.title} />
               </div>
             )}

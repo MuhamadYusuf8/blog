@@ -41,12 +41,12 @@ function getRelativeTime(dateString: string): string {
 // Generates a deterministic background gradient from a name string
 function getAvatarGradient(name: string): string {
   const gradients = [
-    'from-indigo-100 to-purple-100 text-indigo-700 border-indigo-200/60',
-    'from-rose-100 to-orange-100 text-rose-700 border-rose-200/60',
-    'from-emerald-100 to-teal-100 text-emerald-700 border-emerald-200/60',
-    'from-blue-100 to-cyan-100 text-blue-700 border-blue-200/60',
-    'from-fuchsia-100 to-pink-100 text-fuchsia-700 border-fuchsia-200/60',
-    'from-amber-100 to-yellow-100 text-amber-700 border-amber-200/60',
+    'from-violet-600/30 to-fuchsia-600/30 text-violet-200 border-violet-500/40',
+    'from-rose-600/30 to-orange-600/30 text-rose-200 border-rose-500/40',
+    'from-emerald-600/30 to-teal-600/30 text-emerald-200 border-emerald-500/40',
+    'from-blue-600/30 to-cyan-600/30 text-blue-200 border-blue-500/40',
+    'from-pink-600/30 to-purple-600/30 text-pink-200 border-pink-500/40',
+    'from-amber-600/30 to-yellow-600/30 text-amber-200 border-amber-500/40',
   ]
   const index = name.charCodeAt(0) % gradients.length
   return gradients[index]
@@ -76,7 +76,7 @@ export function CommentItem({ comment }: CommentItemProps) {
       <div className="flex-1 min-w-0">
         {/* Name + timestamp row */}
         <div className="flex items-center gap-2 flex-wrap mb-1.5">
-          <span className="text-slate-800 text-sm font-semibold leading-none tracking-tight">
+          <span className="text-white text-sm font-semibold leading-none tracking-tight">
             {comment.commenter_name}
           </span>
           <time
@@ -92,7 +92,7 @@ export function CommentItem({ comment }: CommentItemProps) {
         </div>
 
         {/* Body */}
-        <p className="text-slate-600 text-[13.5px] leading-relaxed whitespace-pre-wrap break-words">
+        <p className="text-slate-300 text-[13.5px] leading-relaxed whitespace-pre-wrap break-words">
           {comment.body}
         </p>
       </div>

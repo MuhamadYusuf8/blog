@@ -29,32 +29,31 @@ function formatDate(iso: string | null | undefined): string {
 function SectionHeading({ icon: Icon, label }: { icon: React.ElementType; label: string }) {
   return (
     <div className="flex items-center gap-2.5 mb-5">
-      {/* Icon container — pearl surface, no amber shout */}
+      {/* Icon container */}
       <div
         className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
         style={{
-          background: 'rgba(241,245,249,0.90)',
-          border:     '1px solid rgba(226,232,240,0.80)',
-          boxShadow:  '0 1px 4px rgba(0,0,0,0.03)',
+          background: 'rgba(124,58,237,0.15)',
+          border:     '1px solid rgba(124,58,237,0.3)',
         }}
       >
-        <Icon size={13} strokeWidth={2} className="text-slate-500" aria-hidden="true" />
+        <Icon size={13} strokeWidth={2} className="text-violet-400" aria-hidden="true" />
       </div>
-      <h2 className="font-display text-[13.5px] font-semibold text-slate-800 tracking-tight">
+      <h2 className="font-display text-[13.5px] font-semibold text-white tracking-tight">
         {label}
       </h2>
     </div>
   )
 }
 
-// ─── Pearl divider ───────────────────────────────────────────────────────────
+// ─── Divider ───────────────────────────────────────────────────────────
 
 function Divider() {
   return (
     <div className="my-6 flex items-center gap-3">
-      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
-      <div className="w-1 h-1 rounded-full bg-slate-300" />
-      <div className="flex-1 h-px bg-gradient-to-l from-transparent via-slate-200 to-transparent" />
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      <div className="w-1 h-1 rounded-full bg-violet-400/40" />
+      <div className="flex-1 h-px bg-gradient-to-l from-transparent via-white/10 to-transparent" />
     </div>
   )
 }
@@ -92,7 +91,10 @@ export default async function Sidebar() {
   const categories = Object.entries(categoryCounts).sort(([, a], [, b]) => b - a)
 
   return (
-    <div className="glass-panel p-6 flex flex-col">
+    <div 
+      className="p-6 flex flex-col rounded-3xl border border-white/10 backdrop-blur-2xl"
+      style={{ background: 'rgba(255,255,255,0.03)', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}
+    >
 
       {/* ── About ────────────────────────────────────────────────────── */}
       <section aria-label="Tentang Penulis">
@@ -105,8 +107,8 @@ export default async function Sidebar() {
             <div
               className="relative w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0"
               style={{
-                border:    '2px solid rgba(255,255,255,1)',
-                boxShadow: '0 8px 24px -6px rgba(0,0,0,0.08)',
+                border:    '2px solid rgba(124,58,237,0.4)',
+                boxShadow: '0 0 20px rgba(124,58,237,0.3)',
               }}
             >
               <Image
@@ -118,27 +120,27 @@ export default async function Sidebar() {
               />
             </div>
           ) : (
-            // Initials — pearl gradient
+            // Initials
             <div
               className="w-20 h-20 rounded-2xl flex items-center justify-center flex-shrink-0"
               style={{
-                background: 'radial-gradient(135deg at 30% 30%, #f8fafc 0%, #e2e8f0 100%)',
-                border:     '2px solid rgba(255,255,255,1)',
-                boxShadow:  '0 8px 24px -6px rgba(0,0,0,0.07)',
+                background: 'linear-gradient(135deg, #7c3aed, #ec4899)',
+                border:     '2px solid rgba(255,255,255,0.2)',
+                boxShadow:  '0 0 20px rgba(124,58,237,0.4)',
               }}
             >
-              <span className="font-display text-2xl font-bold text-slate-500">
+              <span className="font-display text-2xl font-bold text-white">
                 {(settings?.site_title ?? 'K').charAt(0).toUpperCase()}
               </span>
             </div>
           )}
 
           <div>
-            <p className="font-display font-semibold text-slate-900 text-[15px] tracking-tight">
+            <p className="font-display font-semibold text-white text-[15px] tracking-tight">
               {settings?.site_title ?? 'Kak Rahma'}
             </p>
             {settings?.bio && (
-              <p className="text-slate-500 text-[13px] leading-relaxed mt-1.5">
+              <p className="text-slate-400 text-[13px] leading-relaxed mt-1.5">
                 {settings.bio}
               </p>
             )}
@@ -158,10 +160,14 @@ export default async function Sidebar() {
                 <Link
                   key={name}
                   href={`/category/${encodeURIComponent(name.toLowerCase().replace(/\s+/g, '-'))}`}
-                  className="glass-card px-3 py-1.5 flex items-center gap-1.5 text-[12px] font-medium text-slate-600 hover:text-slate-900 glass-transition group"
+                  className="px-3 py-1.5 rounded-xl text-[12px] font-medium text-slate-300 hover:text-white hover:border-violet-500/40 transition-all flex items-center gap-1.5 group"
+                  style={{
+                    background: 'rgba(255,255,255,0.04)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                  }}
                 >
                   <span>{name}</span>
-                  <span className="text-[10.5px] font-semibold text-slate-400 group-hover:text-amber-600 transition-colors">
+                  <span className="text-[10.5px] font-semibold text-violet-400 group-hover:text-violet-300 transition-colors">
                     {count}
                   </span>
                 </Link>
@@ -183,9 +189,13 @@ export default async function Sidebar() {
                 <li key={post.slug}>
                   <Link
                     href={`/posts/${post.slug}`}
-                    className="glass-card p-3.5 flex flex-col gap-1 glass-transition group block"
+                    className="p-3.5 rounded-xl flex flex-col gap-1 transition-all group block"
+                    style={{
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.07)',
+                    }}
                   >
-                    <span className="text-[13px] font-medium text-slate-800 group-hover:text-slate-900 transition-colors line-clamp-2 leading-snug">
+                    <span className="text-[13px] font-medium text-slate-200 group-hover:text-violet-300 transition-colors line-clamp-2 leading-snug">
                       {post.title}
                     </span>
                     <span className="flex items-center gap-1 text-[11px] text-slate-400 mt-0.5">

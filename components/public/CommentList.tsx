@@ -19,7 +19,8 @@ type CommentListProps = {
 }
 
 export function CommentList({ comments }: CommentListProps) {
-  const count = comments.length
+  const safeComments = comments ?? []
+  const count = safeComments.length
 
   return (
     <section aria-label="Komentar" className="flex flex-col gap-6 mt-4">
@@ -52,11 +53,11 @@ export function CommentList({ comments }: CommentListProps) {
           className="p-6 rounded-2xl border border-white/10 flex flex-col gap-6 backdrop-blur-xl"
           style={{ background: 'rgba(255,255,255,0.03)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}
         >
-          {comments.map((comment, index) => (
+          {safeComments.map((comment, index) => (
             <React.Fragment key={comment.id}>
               <CommentItem comment={comment} />
               {/* Divider between comments, not after the last one */}
-              {index < comments.length - 1 && (
+              {index < safeComments.length - 1 && (
                 <hr className="border-white/10" aria-hidden="true" />
               )}
             </React.Fragment>

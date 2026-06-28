@@ -97,11 +97,17 @@ export async function generateMetadata({
 // ---------------------------------------------------------------------------
 function formatDate(dateString: string | null): string {
   if (!dateString) return ''
-  return new Intl.DateTimeFormat('id-ID', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(new Date(dateString))
+  try {
+    const d = new Date(dateString)
+    if (isNaN(d.getTime())) return ''
+    return new Intl.DateTimeFormat('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }).format(d)
+  } catch {
+    return ''
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -247,12 +253,12 @@ export default async function PostPage({
                 </svg>
                 {readTime} min read
               </span>
-              <span aria-label={`${post.view_count} kali dilihat`} className="flex items-center gap-1.5">
+              <span aria-label={`${post.view_count ?? 0} kali dilihat`} className="flex items-center gap-1.5">
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M1 8c0-2.8 3.1-5.5 7-5.5s7 2.7 7 5.5-3.1 5.5-7 5.5S1 10.8 1 8z" />
                   <circle cx="8" cy="8" r="2.5" />
                 </svg>
-                {post.view_count.toLocaleString('id-ID')}
+                {(post.view_count ?? 0).toLocaleString('id-ID')}
               </span>
               {/* ViewCounter fires the RPC on mount — invisible, renders null */}
               <ViewCounter postId={post.id} isDraft={isDraft} />

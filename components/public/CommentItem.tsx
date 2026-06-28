@@ -18,8 +18,10 @@ type CommentItemProps = {
 }
 
 function getRelativeTime(dateString: string): string {
+  if (!dateString) return ''
   const now = Date.now()
   const then = new Date(dateString).getTime()
+  if (isNaN(then)) return ''
   const diffMs = now - then
   const diffSeconds = Math.floor(diffMs / 1000)
   const diffMinutes = Math.floor(diffSeconds / 60)
@@ -48,17 +50,29 @@ function getAvatarGradient(name: string): string {
     'from-pink-600/30 to-purple-600/30 text-pink-200 border-pink-500/40',
     'from-amber-600/30 to-yellow-600/30 text-amber-200 border-amber-500/40',
   ]
-  const index = name.charCodeAt(0) % gradients.length
+  const str = name ?? 'A'
+  const index = str.charCodeAt(0) % gradients.length
   return gradients[index]
 }
 
 export function CommentItem({ comment }: CommentItemProps) {
-  const initial = comment.commenter_name.charAt(0).toUpperCase()
-  const gradient = getAvatarGradient(comment.commenter_name)
+  const name = comment.commenter_name ?? 'Anonim'
+  const initial = name.charAt(0).toUpperCase()
+  const gradient = getAvatarGradient(name)
   const relativeTime = getRelativeTime(comment.created_at)
 
+  let titleDate = ''
+  try {
+    if (comment.created_at) {
+      titleDate = new Intl.DateTimeFormat('id-ID', {
+        dateStyle: 'full',
+        timeStyle: 'short',
+      }).format(new Date(comment.created_at))
+    }
+  } catch {}
+
   return (
-    <article className="flex items-start gap-3" aria-label={`Komentar dari ${comment.commenter_name}`}>
+    <article className="flex items-start gap-3" aria-label={`Komentar dari ${name}`}>
       {/* Avatar circle */}
       <div
         className={`
@@ -77,14 +91,11 @@ export function CommentItem({ comment }: CommentItemProps) {
         {/* Name + timestamp row */}
         <div className="flex items-center gap-2 flex-wrap mb-1.5">
           <span className="text-white text-sm font-semibold leading-none tracking-tight">
-            {comment.commenter_name}
+            {name}
           </span>
           <time
             dateTime={comment.created_at}
-            title={new Intl.DateTimeFormat('id-ID', {
-              dateStyle: 'full',
-              timeStyle: 'short',
-            }).format(new Date(comment.created_at))}
+            title={titleDate}
             className="text-slate-400 text-xs font-medium"
           >
             {relativeTime}

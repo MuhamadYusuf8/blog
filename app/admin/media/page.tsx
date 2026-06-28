@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import MediaGrid from '@/components/admin/MediaGrid'
 import ImageUploader from '@/components/admin/ImageUploader'
+import { Image, RefreshCw, Upload, AlertCircle } from 'lucide-react'
 import type { FileObject } from '@supabase/storage-js'
 
 const BUCKET = 'posts-images'
@@ -23,197 +24,117 @@ export default function MediaPage() {
   const fetchFiles = useCallback(async () => {
     setLoading(true)
     setError(null)
-
     const { data, error: storageError } = await supabase.storage
       .from(BUCKET)
-      .list('uploads', {
-        limit: 200,
-        offset: 0,
-        sortBy: { column: 'created_at', order: 'desc' },
-      })
-
+      .list('uploads', { limit: 200, offset: 0, sortBy: { column: 'created_at', order: 'desc' } })
     if (storageError) {
-      console.error('[MediaPage]', storageError)
       setError('Gagal memuat file media.')
       setLoading(false)
       return
     }
-
     setFiles((data ?? []).filter((f) => f.name !== '.emptyFolderPlaceholder'))
     setLoading(false)
   }, [supabase])
 
-  useEffect(() => {
-    fetchFiles()
-  }, [fetchFiles])
-
-  function handleUpload() {
-    fetchFiles()
-  }
-
-  function handleDelete(filename: string) {
-    setFiles((prev) => prev.filter((f) => f.name !== filename.replace('uploads/', '')))
-  }
+  useEffect(() => { fetchFiles() }, [fetchFiles])
 
   const totalSize = files.reduce((acc, f) => acc + (f.metadata?.size ?? 0), 0)
 
   return (
-    <div className="flex flex-col gap-6">
-
-      {/* ── Page header ─────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-6 w-full">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 pb-6"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+      >
         <div>
-          <h1 className="text-[22px] font-bold tracking-[-0.4px] text-slate-900">
-            Media Library
-          </h1>
+          <div className="inline-flex items-center gap-2 mb-3 px-3 py-1.5 rounded-full text-xs font-medium"
+            style={{ background: 'rgba(14,165,233,0.1)', border: '1px solid rgba(14,165,233,0.2)', color: '#38bdf8' }}
+          >
+            <Image size={11} /> Perpustakaan Media
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-50 tracking-tight mb-1">Media Library</h1>
           {!loading && (
-            <p className="text-[12.5px] text-slate-400 mt-0.5 font-medium">
-              {files.length} file{files.length !== 1 ? 's' : ''} · {formatBytes(totalSize)} digunakan
+            <p className="text-sm text-slate-500">
+              <span className="text-slate-400 font-medium">{files.length}</span> file · <span className="text-slate-400 font-medium">{formatBytes(totalSize)}</span> digunakan
             </p>
           )}
         </div>
-
-        <div
-          className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{
-            background: 'rgba(255,255,255,0.72)',
-            border: '1px solid rgba(226,232,240,0.80)',
-            boxShadow: '0 2px 8px -3px rgba(15,23,42,0.06)',
-          }}
-          aria-hidden="true"
+        <button onClick={fetchFiles} disabled={loading}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 flex-shrink-0 transition-all disabled:opacity-40"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#64748b" strokeWidth="1.8">
-            <rect x="1" y="3" width="14" height="10" rx="1.5" />
-            <circle cx="6" cy="8" r="2" />
-            <path d="M10 6l4 5" strokeLinecap="round" />
-          </svg>
-        </div>
+          <RefreshCw size={13} className={loading ? 'animate-spin' : ''} /> Refresh
+        </button>
       </div>
 
-      {/* ── Upload panel ────────────────────────────────────────────────── */}
-      <div
-        className="rounded-2xl p-5"
-        style={{
-          background: 'rgba(255,255,255,0.72)',
-          border: '1px solid rgba(226,232,240,0.80)',
-          boxShadow: '0 2px 12px -4px rgba(15,23,42,0.05)',
-          backdropFilter: 'blur(8px)',
-        }}
+      {/* Upload Panel */}
+      <div className="rounded-2xl p-5"
+        style={{ background: 'rgba(255,255,255,0.015)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.05)' }}
       >
-        <div className="flex items-center gap-2 mb-4">
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{
-              background: 'rgba(241,245,249,0.90)',
-              border: '1px solid rgba(226,232,240,0.80)',
-            }}
-            aria-hidden="true"
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+            style={{ background: 'rgba(14,165,233,0.12)', border: '1px solid rgba(14,165,233,0.2)' }}
           >
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#64748b" strokeWidth="2">
-              <path d="M8 11V3M5 6l3-3 3 3" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M2 13h12" strokeLinecap="round" />
-            </svg>
+            <Upload size={14} className="text-sky-400" />
           </div>
-          <h2 className="text-[13px] font-semibold text-slate-700">Upload File Baru</h2>
+          <div>
+            <h2 className="text-sm font-semibold text-slate-100">Upload File Baru</h2>
+            <p className="text-xs text-slate-500">Mendukung JPG, PNG, WebP, GIF</p>
+          </div>
         </div>
-
-        <ImageUploader
-          onUpload={handleUpload}
-          bucket={BUCKET}
-          folder="uploads"
-          label="Pilih File Gambar"
-        />
+        <ImageUploader onUpload={fetchFiles} bucket={BUCKET} folder="uploads" label="Pilih File Gambar" />
       </div>
 
-      {/* ── Error state ─────────────────────────────────────────────────── */}
+      {/* Error */}
       {error && (
-        <div
-          role="alert"
-          className="flex items-center gap-2.5 rounded-xl px-4 py-3 text-[12.5px] font-medium"
-          style={{
-            background: 'rgba(254,242,242,0.97)',
-            border: '1px solid rgba(239,68,68,0.20)',
-            color: '#991b1b',
-          }}
+        <div role="alert" className="flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm"
+          style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' }}
         >
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="8" cy="8" r="6.5" />
-            <path d="M8 5v3M8 11v.5" strokeLinecap="round" />
-          </svg>
-          {error}
+          <AlertCircle size={14} />{error}
         </div>
       )}
 
-      {/* ── Grid panel ──────────────────────────────────────────────────── */}
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{
-          background: 'rgba(255,255,255,0.72)',
-          border: '1px solid rgba(226,232,240,0.80)',
-          boxShadow: '0 2px 12px -4px rgba(15,23,42,0.05)',
-          backdropFilter: 'blur(8px)',
-        }}
+      {/* Media Grid Panel */}
+      <div className="rounded-2xl overflow-hidden"
+        style={{ background: 'rgba(255,255,255,0.015)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}
       >
-        {/* Panel header */}
-        <div
-          className="px-5 py-4 flex items-center justify-between"
-          style={{ borderBottom: '1px solid rgba(226,232,240,0.70)' }}
+        <div className="flex items-center justify-between px-5 py-4"
+          style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
         >
-          <div className="flex items-center gap-2">
-            <h2 className="text-[13px] font-semibold text-slate-700">Semua File</h2>
-            {!loading && (
-              <span
-                className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                style={{
-                  background: 'rgba(241,245,249,0.90)',
-                  border: '1px solid rgba(226,232,240,0.80)',
-                  color: '#64748b',
-                }}
-              >
-                {files.length}
-              </span>
-            )}
-          </div>
-
-          <button
-            onClick={fetchFiles}
-            disabled={loading}
-            className="text-slate-400 hover:text-slate-600 transition-colors disabled:opacity-40"
-            aria-label="Refresh media"
-          >
-            <svg
-              width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"
-              className={loading ? 'animate-spin' : ''}
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center"
+              style={{ background: 'rgba(14,165,233,0.12)', border: '1px solid rgba(14,165,233,0.2)' }}
             >
-              <path d="M13.5 8A5.5 5.5 0 1 1 8 2.5a5.5 5.5 0 0 1 4 1.7" strokeLinecap="round" />
-              <path d="M12 1v3h3" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+              <Image size={14} className="text-sky-400" />
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-slate-100">Semua File</h2>
+              {!loading && <p className="text-xs text-slate-500">{files.length} item</p>}
+            </div>
+          </div>
+          {!loading && (
+            <span className="text-[10px] font-bold px-2 py-1 rounded-full"
+              style={{ background: 'rgba(255,255,255,0.05)', color: '#64748b', border: '1px solid rgba(255,255,255,0.07)' }}
+            >{files.length}</span>
+          )}
         </div>
 
         <div className="p-5">
           {loading ? (
-            <div className="flex justify-center items-center py-16">
-              <div
-                className="w-7 h-7 rounded-full border-2"
-                style={{
-                  borderColor: 'rgba(226,232,240,0.80)',
-                  borderTopColor: '#94a3b8',
-                  animation: 'spin 0.75s linear infinite',
-                }}
-              />
-              <style dangerouslySetInnerHTML={{ __html: `@keyframes spin { to { transform: rotate(360deg); } }` }} />
+            <div className="flex flex-col items-center justify-center py-16 gap-3">
+              <div className="w-8 h-8 rounded-full border-2 animate-spin"
+                style={{ borderColor: 'rgba(255,255,255,0.08)', borderTopColor: '#38bdf8' }} />
+              <p className="text-sm text-slate-600">Memuat media...</p>
             </div>
           ) : (
             <MediaGrid
               files={files.map((f) => ({ ...f, name: `uploads/${f.name}` }))}
               bucket={BUCKET}
-              onDelete={handleDelete}
+              onDelete={(filename) => setFiles((prev) => prev.filter((f) => f.name !== filename.replace('uploads/', '')))}
             />
           )}
         </div>
       </div>
-
     </div>
   )
 }

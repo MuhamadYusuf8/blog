@@ -1,38 +1,24 @@
-import CommentModerationTable from '@/components/admin/CommentModerationTable'
 import type { Metadata } from 'next'
+import { MessageSquare } from 'lucide-react'
+import CommentModerationTable from '@/components/admin/CommentModerationTable'
 
-export const metadata: Metadata = {
-  title: 'Comments | Admin',
-}
+export const metadata: Metadata = { title: 'Moderasi Komentar — Kak Rahma' }
 
 export default function CommentsPage() {
   return (
-    <div className="flex flex-col gap-6">
-
-      {/* Page header */}
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-6 w-full">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 pb-6"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+      >
         <div>
-          <h1 className="text-[22px] font-bold tracking-[-0.4px] text-slate-900">
-            Comment Moderation
-          </h1>
-          <p className="text-[12.5px] text-slate-400 mt-0.5 font-medium">
-            Kelola dan moderasi komentar dari pembaca blog.
-          </p>
-        </div>
-
-        {/* Decorative icon */}
-        <div
-          className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{
-            background: 'rgba(255,255,255,0.72)',
-            border: '1px solid rgba(226,232,240,0.80)',
-            boxShadow: '0 2px 8px -3px rgba(15,23,42,0.06)',
-          }}
-          aria-hidden="true"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#64748b" strokeWidth="1.8">
-            <path d="M2 4c0-1.1.9-2 2-2h8a2 2 0 012 2v6a2 2 0 01-2 2H6l-4 2V4z" />
-          </svg>
+          <div className="inline-flex items-center gap-2 mb-3 px-3 py-1.5 rounded-full text-xs font-medium"
+            style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', color: '#fbbf24' }}
+          >
+            <MessageSquare size={11} /> Moderasi Komentar
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-50 tracking-tight mb-1">Komentar</h1>
+          <p className="text-sm text-slate-500">Kelola dan moderasi komentar dari pembaca blog.</p>
         </div>
       </div>
 

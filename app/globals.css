@@ -18,14 +18,15 @@
   --glass-padding-md: 1.5rem;
   --glass-padding-lg: 2rem;
 
-  /* Pearl White palette */
-  --color-pearl-base:   #ffffff;
-  --color-pearl-soft:   #f8fafc;
-  --color-pearl-subtle: #f4f4f5;
+  /* Dark palette */
+  --color-dark-base:    #0f0f0f;
+  --color-dark-surface: #18181b;
+  --color-dark-border:  rgba(255,255,255,0.08);
 
-  /* Accent — warm amber, used sparingly */
-  --color-accent:      #f59e0b;
-  --color-accent-soft: rgba(251,191,36,0.10);
+  /* Accent — violet/pink gradient */
+  --color-accent:      #7c3aed;
+  --color-accent-pink: #ec4899;
+  --color-accent-soft: rgba(124,58,237,0.15);
 }
 
 /* ── Base resets ───────────────────────────────────────────────────────────── */
@@ -40,12 +41,9 @@
   body {
     font-family: var(--font-sans);
     min-height: 100vh;
-    /* Pearl White default — overridden by layout.tsx inline style from DB */
-    background-color: #ffffff;
-    background-image:
-      radial-gradient(ellipse 90% 65% at 15% 5%,  #f8fafc 0%, transparent 55%),
-      radial-gradient(ellipse 75% 55% at 88% 8%,  #ffffff 0%, transparent 50%),
-      radial-gradient(ellipse 65% 75% at 50% 102%, #f4f4f5 0%, transparent 55%);
+    /* Dark default — overridden by layout.tsx inline style from DB */
+    background-color: #0f0f0f;
+    color: #ffffff;
   }
 
   /* Focus ring — slate, not amber, for the clean pearl aesthetic */
@@ -71,14 +69,14 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family:    var(--font-display);
-    color:          #0f172a;
+    color:          #ffffff;
     letter-spacing: -0.025em;
     line-height:    1.2;
   }
 
   p {
     line-height: 1.75;
-    color:       #334155;
+    color:       rgba(255,255,255,0.70);
   }
 
   a {
@@ -86,10 +84,10 @@
     color:           inherit;
   }
 
-  /* Pearl white selection */
+  /* Dark violet selection */
   ::selection {
-    background-color: rgba(203, 213, 225, 0.35);
-    color:            #0f172a;
+    background-color: rgba(124, 58, 237, 0.35);
+    color:            #ffffff;
   }
 }
 
@@ -109,10 +107,10 @@
   ::-webkit-scrollbar       { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
-    background:    rgba(148, 163, 184, 0.30);
+    background:    rgba(124, 58, 237, 0.35);
     border-radius: 99px;
   }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.55); }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(124, 58, 237, 0.60); }
 }
 
 /* ── Utilities ─────────────────────────────────────────────────────────────── */

@@ -56,17 +56,17 @@ export default function MediaGrid({ files, bucket, onDelete }: MediaGridProps) {
         <div
           className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
           style={{
-            background: 'rgba(241,245,249,0.70)',
-            border: '1px solid rgba(226,232,240,0.50)',
+            background: 'rgba(255,255,255,0.02)',
+            border: '1px solid rgba(255,255,255,0.05)',
           }}
         >
-          <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" strokeWidth="1.8">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.8">
             <rect x="1" y="3" width="14" height="10" rx="1.5" />
             <circle cx="6" cy="8" r="2" />
           </svg>
         </div>
-        <p className="text-[13px] font-semibold text-slate-500">Belum ada file media</p>
-        <p className="text-[11.5px] text-slate-400 mt-1">Upload gambar menggunakan form di atas.</p>
+        <p className="text-[13px] font-semibold text-white/50">Belum ada file media</p>
+        <p className="text-[11.5px] text-white/20 mt-1">Upload gambar menggunakan form di atas.</p>
       </div>
     )
   }
@@ -84,14 +84,15 @@ export default function MediaGrid({ files, bucket, onDelete }: MediaGridProps) {
             key={file.name}
             className="group rounded-xl overflow-hidden transition-all duration-200 hover:-translate-y-[2px] hover:shadow-[0_6px_18px_-4px_rgba(15,23,42,0.10)]"
             style={{
-              background: 'rgba(255,255,255,0.85)',
-              border: '1px solid rgba(226,232,240,0.80)',
+              background: 'rgba(255,255,255,0.02)',
+              border: '1px solid rgba(255,255,255,0.05)',
+              backdropFilter: 'blur(8px)',
             }}
           >
             {/* Thumbnail */}
             <div
               className="aspect-square overflow-hidden"
-              style={{ background: 'rgba(241,245,249,0.60)' }}
+              style={{ background: 'rgba(255,255,255,0.01)' }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -106,12 +107,12 @@ export default function MediaGrid({ files, bucket, onDelete }: MediaGridProps) {
             <div className="p-2.5 space-y-2">
               <div>
                 <p
-                  className="text-[11.5px] font-semibold text-slate-600 truncate leading-snug"
+                  className="text-[11.5px] font-semibold text-white/80 truncate leading-snug"
                   title={shortName}
                 >
                   {shortName}
                 </p>
-                <p className="text-[10px] text-slate-400 mt-0.5 font-medium">
+                <p className="text-[10px] text-white/20 mt-0.5 font-medium">
                   {formatBytes(file.metadata?.size)}
                 </p>
               </div>
@@ -124,14 +125,14 @@ export default function MediaGrid({ files, bucket, onDelete }: MediaGridProps) {
                   style={
                     isCopied
                       ? {
-                          background: 'rgba(52,211,153,0.08)',
-                          border: '1px solid rgba(52,211,153,0.22)',
-                          color: '#059669',
+                          background: 'rgba(52,211,153,0.1)',
+                          border: '1px solid rgba(52,211,153,0.2)',
+                          color: '#34d399',
                         }
                       : {
-                          background: 'rgba(241,245,249,0.90)',
-                          border: '1px solid rgba(226,232,240,0.80)',
-                          color: '#475569',
+                          background: 'rgba(255,255,255,0.03)',
+                          border: '1px solid rgba(255,255,255,0.08)',
+                          color: 'rgba(255,255,255,0.6)',
                         }
                   }
                   title="Salin URL"
@@ -159,9 +160,9 @@ export default function MediaGrid({ files, bucket, onDelete }: MediaGridProps) {
                   disabled={isDeleting}
                   className="flex items-center justify-center w-7 rounded-lg transition-all disabled:opacity-50"
                   style={{
-                    background: 'rgba(239,68,68,0.05)',
-                    border: '1px solid rgba(239,68,68,0.15)',
-                    color: '#dc2626',
+                    background: 'rgba(239,68,68,0.1)',
+                    border: '1px solid rgba(239,68,68,0.2)',
+                    color: '#f87171',
                   }}
                   title="Hapus file"
                   aria-label={`Hapus ${shortName}`}

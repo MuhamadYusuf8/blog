@@ -113,9 +113,9 @@ export default function ImageUploader({
         className="w-full flex flex-col items-center justify-center gap-2 px-4 py-7 rounded-xl transition-all duration-200 disabled:cursor-not-allowed"
         style={{
           background: isDragging
-            ? 'rgba(226,232,240,0.50)'
-            : 'rgba(248,250,252,0.80)',
-          border: `1.5px dashed ${isDragging ? 'rgba(100,116,139,0.50)' : 'rgba(203,213,225,0.80)'}`,
+            ? 'rgba(124,58,237,0.1)'
+            : 'rgba(255,255,255,0.02)',
+          border: `1.5px dashed ${isDragging ? 'rgba(124,58,237,0.4)' : 'rgba(255,255,255,0.1)'}`,
           cursor: isBusy ? 'wait' : 'pointer',
         }}
         aria-label={label}
@@ -125,12 +125,12 @@ export default function ImageUploader({
             <div
               className="w-6 h-6 rounded-full border-2"
               style={{
-                borderColor: 'rgba(226,232,240,0.80)',
-                borderTopColor: '#94a3b8',
+                borderColor: 'rgba(255,255,255,0.1)',
+                borderTopColor: '#a78bfa',
                 animation: 'spin 0.75s linear infinite',
               }}
             />
-            <p className="text-[12px] font-medium text-slate-500">
+            <p className="text-[12px] font-medium text-slate-400">
               {status === 'compressing' ? 'Mengoptimalkan gambar…' : 'Mengupload…'}
             </p>
           </>
@@ -139,20 +139,20 @@ export default function ImageUploader({
             <div
               className="w-9 h-9 rounded-xl flex items-center justify-center"
               style={{
-                background: 'rgba(241,245,249,0.90)',
-                border: '1px solid rgba(226,232,240,0.80)',
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.08)',
               }}
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#64748b" strokeWidth="1.8">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" strokeWidth="1.8">
                 <path d="M8 11V3M5 6l3-3 3 3" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M2 13h12" strokeLinecap="round" />
               </svg>
             </div>
-            <div className="text-center">
-              <p className="text-[12.5px] font-semibold text-slate-600">
+            <div className="text-center mt-2">
+              <p className="text-[12.5px] font-semibold text-slate-300">
                 Klik untuk memilih file
               </p>
-              <p className="text-[11px] text-slate-400 mt-0.5">
+              <p className="text-[11px] text-slate-500 mt-0.5">
                 atau drag &amp; drop di sini · JPEG, PNG, WebP, GIF
               </p>
             </div>
@@ -176,18 +176,18 @@ export default function ImageUploader({
         <div
           className="flex items-center gap-2 px-3 py-2 rounded-lg text-[11.5px]"
           style={{
-            background: 'rgba(241,245,249,0.70)',
-            border: '1px solid rgba(226,232,240,0.70)',
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.08)',
           }}
         >
           <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" strokeWidth="2">
             <path d="M1 8h14M8 1v14" strokeLinecap="round" />
           </svg>
           <span className="text-slate-500">Dikompresi:</span>
-          <span className="font-medium text-slate-600">{formatBytes(compressionStats.original)}</span>
-          <span className="text-slate-400">→</span>
-          <span className="font-semibold text-emerald-600">{formatBytes(compressionStats.compressed)}</span>
-          <span className="text-slate-400">(WebP)</span>
+          <span className="font-medium text-slate-300">{formatBytes(compressionStats.original)}</span>
+          <span className="text-slate-500">→</span>
+          <span className="font-semibold text-emerald-400">{formatBytes(compressionStats.compressed)}</span>
+          <span className="text-slate-500">(WebP)</span>
         </div>
       )}
 
@@ -196,7 +196,7 @@ export default function ImageUploader({
         <div className="flex items-center gap-3">
           <div
             className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0"
-            style={{ border: '1px solid rgba(226,232,240,0.80)' }}
+            style={{ border: '1px solid rgba(255,255,255,0.1)' }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
@@ -204,9 +204,9 @@ export default function ImageUploader({
           <div
             className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-lg"
             style={{
-              background: 'rgba(52,211,153,0.08)',
-              border: '1px solid rgba(52,211,153,0.22)',
-              color: '#059669',
+              background: 'rgba(52,211,153,0.15)',
+              border: '1px solid rgba(52,211,153,0.3)',
+              color: '#34d399',
             }}
           >
             <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -222,9 +222,9 @@ export default function ImageUploader({
         <div
           className="flex items-center gap-2 text-[12px] font-medium px-3 py-2 rounded-lg"
           style={{
-            background: 'rgba(254,242,242,0.97)',
-            border: '1px solid rgba(239,68,68,0.20)',
-            color: '#991b1b',
+            background: 'rgba(239,68,68,0.1)',
+            border: '1px solid rgba(239,68,68,0.3)',
+            color: '#f87171',
           }}
         >
           <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">

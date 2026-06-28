@@ -67,20 +67,13 @@ function buildBackgroundStyle(
     }
   }
 
-  if (type === 'color' && value && value !== '#0f0c29') {
+  if (type === 'color' && value) {
     return { backgroundColor: value }
   }
 
-  // ── Pearl White default ────────────────────────────────────────────────
-  // Pure white base with very soft radial hints in pearl/zinc.
-  // Glass panels at rgba(255,255,255,0.60) float elegantly on this surface.
+  // ── Dark default — matches page.tsx bg-[#0f0f0f] ──────────────────────
   return {
-    backgroundColor: '#ffffff',
-    backgroundImage: [
-      'radial-gradient(ellipse 90% 65% at 15% 5%,  #f8fafc 0%, transparent 55%)',
-      'radial-gradient(ellipse 75% 55% at 88% 8%,  #ffffff 0%, transparent 50%)',
-      'radial-gradient(ellipse 65% 75% at 50% 102%, #f4f4f5 0%, transparent 55%)',
-    ].join(', '),
+    backgroundColor: '#0f0f0f',
   }
 }
 
@@ -118,8 +111,8 @@ export default async function RootLayout({
           href={`${siteUrl}/feed.xml`}
         />
         <link rel="sitemap" type="application/xml" href={`${siteUrl}/sitemap.xml`} />
-        {/* Pearl white chrome tint */}
-        <meta name="theme-color" content="#ffffff" />
+        {/* Dark chrome tint — matches page.tsx dark theme */}
+        <meta name="theme-color" content="#0f0f0f" />
       </head>
 
       <body
@@ -134,7 +127,7 @@ export default async function RootLayout({
         ].join(' ')}
       >
         <NextTopLoader
-          color="#d97706"
+          color="#7c3aed"
           initialPosition={0.08}
           crawlSpeed={200}
           height={3}
@@ -142,7 +135,7 @@ export default async function RootLayout({
           showSpinner={false}
           easing="ease"
           speed={200}
-          shadow="0 0 10px #d97706,0 0 5px #d97706"
+          shadow="0 0 10px #7c3aed,0 0 5px #a855f7"
         />
         <ToastProvider>
           {children}

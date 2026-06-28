@@ -1,90 +1,297 @@
-/**
- * app/not-found.tsx — 404 Not Found Page
- * SRS §2.5, RULE 1, RULE 8, Phase 2D step 25.
- *
- * RULE 1: Uses .glass-panel — NOT a plain unstyled div.
- * RULE 8: Full first-class UI page, not a placeholder.
- *
- * Requirements (SRS §2.5):
- *   - Server Component (not 'use client')
- *   - Uses .glass-panel on the content container
- *   - Large "404" heading in text-white font-bold text-6xl
- *   - Subheading "Page Not Found"
- *   - Vague description — does NOT confirm whether a slug ever existed
- *     (prevents enumeration of deleted post slugs)
- *   - "← Back to Blog" link to /
- *   - Renders over the dynamic background
- *   - role="alert" on the error container (WCAG 2.1 AA, SRS §10)
- */
+"use client";
 
-import React from 'react'
-import Link from 'next/link'
-import type { Metadata } from 'next'
+import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { ArrowLeft, ArrowRight, BookOpen, Search } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: '404 — Halaman Tidak Ditemukan',
-  description: 'Halaman yang Anda cari tidak ditemukan.',
-  robots: { index: false, follow: false },
+// ─── NOISE CANVAS ─────────────────────────────────────────────────────────────
+// Creates a subtle film-grain texture overlay for depth
+
+function NoiseCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const W = (canvas.width = window.innerWidth);
+    const H = (canvas.height = window.innerHeight);
+    const imageData = ctx.createImageData(W, H);
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const v = Math.random() * 255;
+      data[i] = v;
+      data[i + 1] = v;
+      data[i + 2] = v;
+      data[i + 3] = 12; // very low alpha — subtle grain
+    }
+    ctx.putImageData(imageData, 0, 0);
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      aria-hidden
+      className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-30"
+    />
+  );
 }
 
-export default function NotFoundPage() {
+// ─── GRID LINES ───────────────────────────────────────────────────────────────
+
+function GridLines() {
   return (
-    /* Full-screen centering over the dynamic body background */
-    <div className="min-h-[calc(100dvh-4rem)] flex items-center justify-center px-4 py-12">
-      {/*
-       * RULE 1: glass-panel is MANDATORY here.
-       * RULE 8: role="alert" for WCAG 2.1 AA compliance.
-       * Vague copy: does NOT say "this post was deleted" or "this slug existed".
-       */}
-      <div
-        className="glass-panel p-10 md:p-16 max-w-lg w-full text-center flex flex-col items-center gap-6 animate-fade-in"
-        role="alert"
-      >
-        {/* Decorative gradient orb */}
-        <div
-          className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/20 border border-purple-400/20 flex items-center justify-center mb-2"
-          aria-hidden="true"
-        >
-          <span className="text-4xl">🔍</span>
-        </div>
+    <div
+      aria-hidden
+      className="absolute inset-0 pointer-events-none"
+      style={{
+        backgroundImage: `
+          linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)
+        `,
+        backgroundSize: "80px 80px",
+        maskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%)",
+      }}
+    />
+  );
+}
 
-        {/* 404 number — SRS: text-white font-bold text-6xl */}
-        <p
-          className="text-white font-bold text-6xl md:text-8xl leading-none"
-          aria-hidden="true"
-        >
-          404
-        </p>
+// ─── ANIMATED GLOW ────────────────────────────────────────────────────────────
 
-        {/* Subheading — SRS: "Page Not Found" */}
-        <h1 className="text-white font-bold text-xl md:text-2xl">
-          Halaman Tidak Ditemukan
-        </h1>
+function GlowOrb() {
+  return (
+    <>
+      {/* Primary violet glow */}
+      <motion.div
+        aria-hidden
+        animate={{ scale: [1, 1.12, 1], opacity: [0.15, 0.22, 0.15] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute pointer-events-none"
+        style={{
+          top: "20%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "600px",
+          height: "400px",
+          background: "radial-gradient(ellipse, rgba(124,58,237,0.4) 0%, transparent 70%)",
+          filter: "blur(40px)",
+        }}
+      />
+      {/* Secondary pink glow, offset */}
+      <motion.div
+        aria-hidden
+        animate={{ scale: [1, 1.08, 1], opacity: [0.08, 0.13, 0.08] }}
+        transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        className="absolute pointer-events-none"
+        style={{
+          top: "35%",
+          left: "55%",
+          width: "400px",
+          height: "300px",
+          background: "radial-gradient(ellipse, rgba(219,39,119,0.35) 0%, transparent 70%)",
+          filter: "blur(50px)",
+        }}
+      />
+    </>
+  );
+}
 
-        {/* Vague description — deliberately does not confirm slug existence */}
-        <p className="text-white/55 text-sm leading-relaxed max-w-sm">
-          Maaf, halaman yang Anda cari tidak ada atau mungkin telah dipindahkan.
-          Coba periksa kembali alamat URL, atau kembali ke beranda.
-        </p>
+// ─── SEARCH INPUT ─────────────────────────────────────────────────────────────
 
-        {/* Back to Blog — SRS: "← Back to Blog" link to / */}
-        <Link
-          href="/"
-          id="not-found-back-home"
-          className="
-            mt-2 inline-flex items-center gap-2
-            px-6 py-3 rounded-xl
-            bg-purple-600/70 hover:bg-purple-500/80
-            text-white font-semibold text-sm
-            border border-purple-400/30
-            shadow-lg shadow-purple-900/30
-            transition-all duration-200 hover:scale-105
-          "
-        >
-          <span aria-hidden="true">←</span>
-          Kembali ke Blog
+function SearchInput() {
+  const [q, setQ] = useState("");
+
+  return (
+    <form
+      action="/search"
+      method="GET"
+      className="relative w-full max-w-xs"
+    >
+      <Search
+        size={14}
+        className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/25 pointer-events-none"
+      />
+      <input
+        name="q"
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="Cari artikel..."
+        className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-white/25 outline-none focus:border-violet-500/40 focus:bg-white/8 transition-all"
+      />
+    </form>
+  );
+}
+
+// ─── PAGE ─────────────────────────────────────────────────────────────────────
+
+const FADE_UP = (delay = 0) => ({
+  initial: { opacity: 0, y: 24 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] as const },
+});
+
+
+export default function NotFound() {
+  return (
+    <main
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+      style={{ background: "#0a0a0a" }}
+    >
+      {/* ── Textures & Atmosphere ── */}
+      <GlowOrb />
+      <GridLines />
+      <NoiseCanvas />
+
+      {/* ── Minimal Navbar ── */}
+      <div className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center px-6 border-b border-white/5">
+        <Link href="/" className="flex items-center gap-2 group">
+          <div
+            className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+            style={{ background: "linear-gradient(135deg,#7c3aed,#db2777)" }}
+          >
+            <BookOpen size={13} className="text-white" />
+          </div>
+          <span className="text-white/80 text-sm font-semibold tracking-tight group-hover:text-white transition-colors">
+            Kak<span className="text-violet-400">Rahma</span>
+          </span>
         </Link>
       </div>
-    </div>
-  )
+
+      {/* ── Main Content ── */}
+      <div className="relative z-10 flex flex-col items-center text-center px-6 pt-14 max-w-xl w-full">
+
+        {/* Error code — typographic centerpiece */}
+        <motion.div {...FADE_UP(0)} className="mb-8 select-none">
+          {/* Tiny label above */}
+          <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-white/20 mb-6">
+            Error 404
+          </p>
+
+          {/* Large "404" — thin stroked, gradient */}
+          <div className="relative inline-block">
+            <span
+              className="font-black leading-none block"
+              style={{
+                fontSize: "clamp(5rem, 18vw, 10rem)",
+                color: "transparent",
+                WebkitTextStroke: "1.5px rgba(255,255,255,0.07)",
+                letterSpacing: "-0.05em",
+              }}
+            >
+              404
+            </span>
+            {/* Violet gradient overlay — clipped to text shape */}
+            <span
+              aria-hidden
+              className="absolute inset-0 font-black leading-none flex items-center justify-center bg-gradient-to-br from-violet-400 via-fuchsia-400 to-pink-400 bg-clip-text text-transparent opacity-60"
+              style={{
+                fontSize: "clamp(5rem, 18vw, 10rem)",
+                letterSpacing: "-0.05em",
+              }}
+            >
+              404
+            </span>
+          </div>
+        </motion.div>
+
+        {/* Divider line */}
+        <motion.div
+          {...FADE_UP(0.15)}
+          className="w-12 h-px mb-8"
+          style={{ background: "linear-gradient(90deg, transparent, rgba(124,58,237,0.6), transparent)" }}
+        />
+
+        {/* Heading */}
+        <motion.h1
+          {...FADE_UP(0.2)}
+          className="text-xl sm:text-2xl font-bold text-white mb-3 leading-snug"
+          style={{ letterSpacing: "-0.02em" }}
+        >
+          Halaman Tidak Ditemukan
+        </motion.h1>
+
+        {/* Subtitle */}
+        <motion.p
+          {...FADE_UP(0.28)}
+          className="text-white/40 text-sm leading-relaxed mb-10 max-w-sm"
+        >
+          Halaman yang kamu cari mungkin sudah dipindahkan, dihapus, atau
+          alamatnya tidak tepat. Coba cari artikel secara langsung.
+        </motion.p>
+
+        {/* Search */}
+        <motion.div {...FADE_UP(0.35)} className="w-full flex justify-center mb-8">
+          <SearchInput />
+        </motion.div>
+
+        {/* Actions */}
+        <motion.div
+          {...FADE_UP(0.42)}
+          className="flex items-center gap-3 flex-wrap justify-center"
+        >
+          {/* Primary CTA */}
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-sm font-semibold text-white px-5 py-2.5 rounded-xl transition-all hover:brightness-110 active:scale-[0.97]"
+            style={{ background: "linear-gradient(135deg,#7c3aed,#db2777)", boxShadow: "0 4px 20px rgba(124,58,237,0.3)" }}
+          >
+            <ArrowLeft size={14} />
+            Kembali ke Beranda
+          </Link>
+
+          {/* Secondary — Archive */}
+          <Link
+            href="/archive"
+            className="flex items-center gap-2 text-sm font-medium text-white/50 hover:text-white/90 px-5 py-2.5 rounded-xl border border-white/8 hover:border-white/20 bg-white/4 hover:bg-white/8 transition-all"
+          >
+            Semua Artikel
+            <ArrowRight size={14} />
+          </Link>
+        </motion.div>
+
+        {/* Quick nav row */}
+        <motion.div
+          {...FADE_UP(0.52)}
+          className="mt-12 flex flex-col items-center gap-4"
+        >
+          <p className="text-[10px] font-semibold tracking-[0.25em] uppercase text-white/15">
+            Jelajahi
+          </p>
+          <div className="flex flex-wrap justify-center gap-2">
+            {[
+              { label: "Beranda", href: "/" },
+              { label: "Tentang", href: "/about" },
+              { label: "Arsip", href: "/archive" },
+              { label: "Kontak", href: "/kontak" },
+              { label: "Jurnal", href: "/jurnal" },
+              { label: "Desain", href: "/desain" },
+            ].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="text-xs text-white/30 hover:text-white/70 border border-white/6 hover:border-white/15 bg-white/3 hover:bg-white/6 px-3 py-1.5 rounded-lg transition-all"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </motion.div>
+
+      </div>
+
+      {/* ── Bottom signature ── */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.9, duration: 0.6 }}
+        className="absolute bottom-6 text-[10px] tracking-[0.2em] uppercase text-white/12"
+      >
+        KakRahma · Blog
+      </motion.p>
+    </main>
+  );
 }

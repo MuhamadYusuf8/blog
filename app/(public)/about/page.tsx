@@ -1,389 +1,587 @@
-// app/(public)/about/page.tsx
-// ─────────────────────────────────────────────────────────────────────────────
-// About page — Pearl White Minimalist Glassmorphism.
-// Professional & clean (portofolio style).
-// Fetches bio, avatar, site_title, dan social links dari site_settings.
-// ─────────────────────────────────────────────────────────────────────────────
+"use client";
 
-import type { Metadata } from 'next'
-import Image             from 'next/image'
-import Link              from 'next/link'
+import { useRef } from "react";
 import {
-  Mail, BookOpen,
-  PenLine, ArrowLeft, ExternalLink,
-  Feather, Heart, Bookmark,
-} from 'lucide-react'
-import { Instagram, Twitter } from '@/components/ui/Icons'
-import { createClient } from '@/lib/supabase/server'
+  motion,
+  useScroll,
+  useTransform,
+  useSpring,
+} from "framer-motion";
+import {
+  Sparkles,
+  Heart,
+  Coffee,
+  Pen,
+  BookOpen,
+  Users,
+  Star,
+  ArrowUpRight,
+  Mail,
+  Palette,
+  Lightbulb,
+  Moon,
+} from "lucide-react";
+import { Instagram, Twitter, Github } from "@/components/ui/Icons";
+import { PublicNavbar } from "@/components/public/PublicNavbar";
 
-export const metadata: Metadata = {
-  title:       'Tentang',
-  description: 'Kenalan lebih dekat dengan Kak Rahma — penulis dan blogger.',
-}
+// ─── DATA ─────────────────────────────────────────────────────────────────────
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+const STATS = [
+  { value: "120+", label: "Artikel Ditulis",   icon: Pen,      color: "from-violet-500 to-fuchsia-500" },
+  { value: "3+",   label: "Tahun Berkarya",    icon: Star,     color: "from-pink-500 to-rose-500"      },
+  { value: "48K",  label: "Pembaca Setia",     icon: Users,    color: "from-amber-500 to-orange-500"   },
+  { value: "∞",    label: "Cerita Tersimpan",  icon: BookOpen, color: "from-emerald-500 to-teal-500"   },
+];
 
-interface SiteSettings {
-  site_title:       string | null
-  bio:              string | null
-  avatar_url:       string | null
-  email:            string | null
-  instagram_url:    string | null
-  twitter_url:      string | null
-}
-
-// ─── Writing values data ─────────────────────────────────────────────────────
-
-const WRITING_VALUES = [
+const VALUES = [
   {
-    icon:  Feather,
-    title: 'Jujur',
-    body:  'Setiap tulisan lahir dari pengalaman nyata. Tidak ada yang dibuat-buat — hanya cerita yang benar-benar dirasakan.',
+    icon: Sparkles,
+    title: "Keaslian di Atas Segalanya",
+    desc: "Setiap kata yang aku tulis adalah potongan nyata dari hidupku — tidak dipoles berlebihan, tidak dibuat-buat.",
   },
   {
-    icon:  Heart,
-    title: 'Hangat',
-    body:  'Menulis seperti berbicara dengan sahabat lama. Tidak perlu formal, yang penting sampai ke hati.',
+    icon: Heart,
+    title: "Bercerita dengan Empati",
+    desc: "Aku percaya cerita yang baik bukan yang paling indah, tapi yang paling jujur membuat pembacanya merasa ditemani.",
   },
   {
-    icon:  Bookmark,
-    title: 'Bermakna',
-    body:  'Setiap kata dipilih dengan hati-hati. Bukan sekadar mengisi halaman, tapi meninggalkan sesuatu yang bisa dibawa pulang.',
+    icon: Coffee,
+    title: "Proses adalah Seninya",
+    desc: "Karya terbaik lahir bukan dari inspirasi semata, tapi dari keberanian duduk dan terus menulis bahkan saat ide tak kunjung datang.",
   },
-]
+  {
+    icon: Palette,
+    title: "Visual sebagai Bahasa",
+    desc: "Bagi aku, gambar dan kata adalah dua sisi dari koin yang sama — keduanya bercerita dengan caranya masing-masing.",
+  },
+  {
+    icon: Moon,
+    title: "Keheningan Malam sebagai Studio",
+    desc: "Karya terbaikku lahir di antara jam sebelas malam dan dua pagi, ketika dunia diam dan pikiran paling jujur.",
+  },
+  {
+    icon: Lightbulb,
+    title: "Komunitas adalah Energi",
+    desc: "Setiap komentar, setiap DM, setiap 'terima kasih' dari pembaca adalah bahan bakar yang menjagaku terus berkarya.",
+  },
+];
 
-// ─── Stat item ───────────────────────────────────────────────────────────────
+const TIMELINE = [
+  {
+    year: "2022",
+    title: "Baris Pertama yang Bergetar",
+    desc: "Menulis jurnal pertama di blog sederhana tanpa domain sendiri. Hanya menulis untuk diri sendiri — tanpa ekspektasi, penuh keberanian.",
+    side: "left",
+    accent: "from-violet-500 to-fuchsia-500",
+  },
+  {
+    year: "2023",
+    title: "Menemukan Suara Sendiri",
+    desc: "Mulai konsisten posting setiap minggu. Pembaca pertama berdatangan. Menyadari bahwa ada orang lain yang juga merasakan hal yang sama.",
+    side: "right",
+    accent: "from-pink-500 to-rose-500",
+  },
+  {
+    year: "2024",
+    title: "Dunia Webtoon Terbuka",
+    desc: "Bereksperimen menggabungkan ilustrasi dengan tulisan. Lahirlah format baru — esai bergambar yang menjadi ciri khas Kak Rahma.",
+    side: "left",
+    accent: "from-amber-500 to-orange-500",
+  },
+  {
+    year: "2025",
+    title: "Komunitas yang Tumbuh",
+    desc: "Pembaca menembus 40.000. Merilis seri 'Catatan Malam Hari' yang menjadi yang paling banyak dibaca sepanjang masa.",
+    side: "right",
+    accent: "from-emerald-500 to-teal-500",
+  },
+  {
+    year: "2026",
+    title: "Membangun Rumah Digital",
+    desc: "Peluncuran ulang blog dengan desain baru — lebih sinematik, lebih personal, lebih seperti rumah. Ini bukan akhir, ini awal yang baru.",
+    side: "left",
+    accent: "from-cyan-500 to-blue-500",
+  },
+];
 
-function StatItem({ value, label }: { value: string; label: string }) {
+const SOCIALS = [
+  { icon: Instagram, label: "Instagram", handle: "@kakrahma",     href: "#" },
+  { icon: Twitter,   label: "Twitter/X", handle: "@kakrahma_id",  href: "#" },
+  { icon: Mail,      label: "Email",     handle: "hi@kakrahma.id", href: "#" },
+  { icon: Github,    label: "GitHub",    handle: "kakrahma",       href: "#" },
+];
+
+// ─── NOISE SVG ────────────────────────────────────────────────────────────────
+
+const Noise = () => (
+  <svg className="absolute inset-0 w-full h-full opacity-[0.032] pointer-events-none" aria-hidden>
+    <filter id="n">
+      <feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="3" stitchTiles="stitch" />
+      <feColorMatrix type="saturate" values="0" />
+    </filter>
+    <rect width="100%" height="100%" filter="url(#n)" />
+  </svg>
+);
+
+// ─── STAT CARD ────────────────────────────────────────────────────────────────
+
+function StatCard({ value, label, icon: Icon, color }: typeof STATS[0]) {
   return (
-    <div className="flex flex-col items-center gap-1 text-center">
-      <span
-        className="font-display text-[2.2rem] font-bold text-slate-900 leading-none"
-        style={{ letterSpacing: '-0.03em' }}
-      >
-        {value}
-      </span>
-      <span className="text-[12px] font-medium text-slate-400 tracking-wide uppercase">
-        {label}
-      </span>
-    </div>
-  )
-}
-
-// ─── Social button ───────────────────────────────────────────────────────────
-
-function SocialBtn({
-  href,
-  icon: Icon,
-  label,
-  handle,
-}: {
-  href:   string
-  icon:   React.ElementType
-  label:  string
-  handle: string
-}) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group glass-card glass-transition hover:-translate-y-0.5 flex items-center gap-3 px-4 py-3"
-      aria-label={label}
+    <motion.div
+      whileHover={{ y: -6, boxShadow: "0 0 0 1px rgba(139,92,246,0.45), 0 16px 48px rgba(139,92,246,0.12)" }}
+      transition={{ duration: 0.22 }}
+      className="group relative overflow-hidden rounded-2xl bg-white/[0.04] border border-white/8 backdrop-blur-xl p-6 flex flex-col gap-4 cursor-default"
     >
-      <div
-        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-        style={{
-          background: 'rgba(241,245,249,0.90)',
-          border:     '1px solid rgba(226,232,240,0.80)',
-        }}
-      >
-        <Icon size={16} strokeWidth={2} className="text-slate-600 group-hover:text-slate-900 transition-colors" />
+      {/* Corner glow on hover */}
+      <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full blur-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+        style={{ background: `linear-gradient(135deg, rgba(139,92,246,0.8), rgba(244,114,182,0.6))` }} />
+
+      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color} bg-opacity-15 flex items-center justify-center`}
+        style={{ background: "rgba(255,255,255,0.06)" }}>
+        <Icon size={18} className={`bg-gradient-to-br ${color} bg-clip-text`} style={{ color: "rgba(167,139,250,0.9)" }} />
       </div>
-      <div className="min-w-0">
-        <p className="text-[12px] font-semibold text-slate-400 tracking-wide uppercase">{label}</p>
-        <p className="text-[13.5px] font-medium text-slate-700 group-hover:text-slate-900 transition-colors truncate">
-          {handle}
-        </p>
+
+      <div>
+        <div className="text-3xl font-black text-white tracking-tight leading-none mb-1">{value}</div>
+        <div className="text-white/35 text-xs font-medium uppercase tracking-widest">{label}</div>
       </div>
-      <ExternalLink
-        size={12}
-        strokeWidth={2}
-        className="ml-auto text-slate-300 group-hover:text-slate-500 transition-colors flex-shrink-0"
-        aria-hidden="true"
-      />
-    </a>
-  )
+    </motion.div>
+  );
 }
 
-// ─── Page ────────────────────────────────────────────────────────────────────
+// ─── VALUE CARD ───────────────────────────────────────────────────────────────
 
-export default async function AboutPage() {
-  const supabase = createClient()
+function ValueCard({ icon: Icon, title, desc }: typeof VALUES[0]) {
+  return (
+    <motion.div
+      whileHover={{ y: -4, borderColor: "rgba(139,92,246,0.35)" }}
+      transition={{ duration: 0.2 }}
+      className="group rounded-2xl bg-white/[0.03] border border-white/8 p-5 flex gap-4"
+    >
+      <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-violet-500/10 border border-violet-500/15 flex items-center justify-center">
+        <Icon size={15} className="text-violet-400" />
+      </div>
+      <div>
+        <h4 className="text-white text-sm font-bold mb-1.5 leading-snug">{title}</h4>
+        <p className="text-white/40 text-xs leading-relaxed">{desc}</p>
+      </div>
+    </motion.div>
+  );
+}
 
-  // Parallel fetches
-  const [settingsResult, statsResult] = await Promise.all([
-    supabase
-      .from('site_settings')
-      .select('site_title, bio, avatar_url, email, instagram_url, twitter_url')
-      .single(),
-    supabase
-      .from('posts')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'published')
-      .is('deleted_at', null),
-  ])
+// ─── TIMELINE ITEM ────────────────────────────────────────────────────────────
 
-  const s           = settingsResult.data as SiteSettings | null
-  const totalPosts  = statsResult.count ?? 0
-  const siteTitle   = s?.site_title ?? 'Kak Rahma'
-  const bio         = s?.bio        ?? 'Penulis dan blogger yang gemar berbagi cerita, refleksi, dan pemikiran sehari-hari tentang kehidupan, keluarga, dan hal-hal kecil yang sering terlewatkan.'
-
-  // Social links — only show if configured
-  const socials = [
-    s?.email         && { href: `mailto:${s.email}`,    icon: Mail,      label: 'Email',     handle: s.email },
-    s?.instagram_url && { href: s.instagram_url,         icon: Instagram, label: 'Instagram', handle: s.instagram_url.replace(/^https?:\/\/(www\.)?instagram\.com\/?/, '@').replace(/\/$/, '') },
-    s?.twitter_url   && { href: s.twitter_url,           icon: Twitter,   label: 'Twitter / X', handle: s.twitter_url.replace(/^https?:\/\/(www\.)?twitter\.com\/?/, '@').replace(/^https?:\/\/(www\.)?x\.com\/?/, '@').replace(/\/$/, '') },
-  ].filter(Boolean) as { href: string; icon: React.ElementType; label: string; handle: string }[]
-
-  // Fallback socials for demo when DB has no entries
-  const displaySocials = socials.length > 0 ? socials : [
-    { href: 'mailto:halo@kakrahma.com', icon: Mail,      label: 'Email',     handle: 'halo@kakrahma.com' },
-    { href: '#',                         icon: Instagram, label: 'Instagram', handle: '@kakrahma' },
-  ]
+function TimelineItem({ item, index }: { item: typeof TIMELINE[0]; index: number }) {
+  const isLeft = item.side === "left";
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-24">
-
-      {/* ── Back link ─────────────────────────────────────────────────── */}
-      <Link
-        href="/"
-        className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-slate-400 hover:text-slate-700 transition-colors duration-200 mb-10 group"
+    <div className={`relative flex items-start gap-0 ${isLeft ? "flex-row" : "flex-row-reverse"} group`}>
+      {/* Content card */}
+      <motion.div
+        initial={{ opacity: 0, x: isLeft ? -40 : 40 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.6, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+        className="w-[calc(50%-28px)] rounded-2xl bg-white/[0.04] border border-white/8 p-5 hover:border-violet-500/25 transition-colors duration-300"
       >
-        <ArrowLeft
-          size={13}
-          strokeWidth={2.5}
-          className="group-hover:-translate-x-0.5 transition-transform duration-200"
-          aria-hidden="true"
+        <div className={`text-xs font-black uppercase tracking-[0.2em] bg-gradient-to-r ${item.accent} bg-clip-text text-transparent mb-2`}>
+          {item.year}
+        </div>
+        <h4 className="text-white font-bold text-sm leading-snug mb-2">{item.title}</h4>
+        <p className="text-white/40 text-xs leading-relaxed">{item.desc}</p>
+      </motion.div>
+
+      {/* Center spine dot */}
+      <div className="flex-shrink-0 w-14 flex flex-col items-center pt-5">
+        <motion.div
+          initial={{ scale: 0 }}
+          whileInView={{ scale: 1 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.35, delay: index * 0.08 + 0.2, ease: "backOut" }}
+          className={`w-4 h-4 rounded-full bg-gradient-to-br ${item.accent} shadow-lg`}
+          style={{ boxShadow: "0 0 16px rgba(139,92,246,0.5)" }}
         />
-        Kembali ke Blog
-      </Link>
+      </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          HERO — Avatar + Name + Bio
-      ══════════════════════════════════════════════════════════════════ */}
-      <div className="glass-panel p-8 sm:p-10 mb-5">
-        <div className="flex flex-col sm:flex-row gap-8 items-center sm:items-start">
+      {/* Empty spacer for the other side */}
+      <div className="w-[calc(50%-28px)]" />
+    </div>
+  );
+}
 
-          {/* Avatar */}
-          <div className="flex-shrink-0">
-            {s?.avatar_url ? (
-              <div
-                className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-3xl overflow-hidden"
-                style={{
-                  border:    '3px solid rgba(255,255,255,1)',
-                  boxShadow: '0 16px 48px -12px rgba(0,0,0,0.12), 0 4px 16px -4px rgba(0,0,0,0.06)',
-                }}
+// ─── PAGE ─────────────────────────────────────────────────────────────────────
+
+export default function AboutPage() {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const portraitY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 40]), { stiffness: 80, damping: 20 });
+
+  return (
+    <div className="min-h-screen bg-[#0f0f0f] text-white overflow-x-hidden">
+      <PublicNavbar />
+
+      {/* ── HERO ──────────────────────────────────────────────────────────── */}
+      <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden pt-20 pb-10">
+
+        {/* Ambient glows */}
+        <div aria-hidden className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full blur-[140px] opacity-20"
+            style={{ background: "radial-gradient(circle, rgba(139,92,246,1), transparent 70%)" }} />
+          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full blur-[120px] opacity-12"
+            style={{ background: "radial-gradient(circle, rgba(244,114,182,1), transparent 70%)" }} />
+          {/* Grid */}
+          <div className="absolute inset-0 opacity-[0.025]"
+            style={{
+              backgroundImage: "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+              backgroundSize: "48px 48px",
+            }} />
+          <Noise />
+        </div>
+
+        <div className="relative z-10 max-w-screen-xl mx-auto px-5 sm:px-8 w-full">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+
+            {/* LEFT — Text */}
+            <div>
+              {/* Eyebrow */}
+              <motion.div
+                initial={{ opacity: 0, y: -12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="flex items-center gap-2.5 mb-7"
               >
-                <Image
-                  src={s.avatar_url}
-                  alt={`Foto ${siteTitle}`}
-                  fill
-                  sizes="128px"
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            ) : (
-              // Pearl initials avatar
-              <div
-                className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl flex items-center justify-center flex-shrink-0"
-                style={{
-                  background: 'linear-gradient(145deg, #f8fafc 0%, #e2e8f0 100%)',
-                  border:     '3px solid rgba(255,255,255,1)',
-                  boxShadow:  '0 16px 48px -12px rgba(0,0,0,0.10), 0 4px 16px -4px rgba(0,0,0,0.06)',
-                }}
-              >
-                <span
-                  className="font-display font-bold text-slate-400"
-                  style={{ fontSize: '3rem', lineHeight: 1 }}
-                >
-                  {siteTitle.charAt(0).toUpperCase()}
+                <div className="w-1 h-6 rounded-full bg-gradient-to-b from-violet-400 to-pink-400" />
+                <span className="text-[11px] font-black uppercase tracking-[0.25em] text-white/35">
+                  Tentang Penulis
                 </span>
-              </div>
-            )}
+              </motion.div>
+
+              {/* Name */}
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.65, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                className="mb-6"
+              >
+                <p className="text-white/30 text-lg font-light mb-1">Halo, Saya</p>
+                <h1
+                  className="font-black leading-[0.9]"
+                  style={{ fontSize: "clamp(4rem, 11vw, 8rem)" }}
+                >
+                  <span
+                    style={{
+                      background: "linear-gradient(135deg, #ffffff 0%, rgba(167,139,250,0.9) 50%, rgba(244,114,182,0.8) 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                      filter: "drop-shadow(0 0 40px rgba(139,92,246,0.45))",
+                    }}
+                  >
+                    Kak
+                  </span>
+                  <br />
+                  <span className="text-white" style={{ filter: "drop-shadow(0 0 32px rgba(244,114,182,0.3))" }}>
+                    Rahma
+                  </span>
+                </h1>
+              </motion.div>
+
+              {/* Bio */}
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.25 }}
+                className="text-white/45 leading-relaxed text-sm max-w-md mb-8"
+              >
+                Penulis jurnal, ilustrator paruh waktu, dan peminum kopi profesional. 
+                Aku percaya bahwa setiap orang punya cerita yang layak diceritakan — 
+                dan aku di sini untuk membantu menemukan cara terbaik untuk menceritakannya.
+                Blog ini adalah ruang jujurku: tidak sempurna, tapi selalu nyata.
+              </motion.p>
+
+              {/* Signature tags */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.35 }}
+                className="flex flex-wrap gap-2"
+              >
+                {["Jurnal Harian", "Webtoon", "Ilustrasi", "Foto Esai", "Jakarta 🇮🇩"].map((tag) => (
+                  <span key={tag}
+                    className="text-[10px] font-semibold text-white/40 bg-white/5 border border-white/8 px-3 py-1.5 rounded-full hover:border-violet-500/30 hover:text-white/60 transition-all cursor-default">
+                    {tag}
+                  </span>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* RIGHT — Portrait */}
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="flex justify-center lg:justify-end"
+            >
+              <motion.div
+                style={{ y: portraitY }}
+                animate={{ y: [0, -12, 0] }}
+                transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
+                className="relative w-full max-w-xs sm:max-w-sm"
+              >
+                {/* Glow ring */}
+                <div className="absolute -inset-4 rounded-3xl opacity-30 blur-2xl"
+                  style={{ background: "linear-gradient(135deg, rgba(139,92,246,0.6), rgba(244,114,182,0.4))" }} />
+
+                {/* Portrait container */}
+                <div className="relative aspect-[3/4] rounded-3xl overflow-hidden border border-white/10">
+                  <img
+                    src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&h=800&fit=crop&q=90"
+                    alt="Kak Rahma"
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Bottom fade to bg */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-[#0f0f0f]/10 to-transparent" />
+
+                  {/* Floating caption */}
+                  <div className="absolute bottom-5 left-5 right-5">
+                    <div className="bg-black/50 backdrop-blur-xl border border-white/10 rounded-2xl px-4 py-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-white font-bold text-sm">Kak Rahma</div>
+                          <div className="text-white/40 text-[10px]">Penulis & Ilustrator</div>
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
+                          <Pen size={13} className="text-white" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Decorative corner dots */}
+                <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-violet-500/60 blur-sm" />
+                <div className="absolute -bottom-2 -left-2 w-3 h-3 rounded-full bg-pink-500/50 blur-sm" />
+              </motion.div>
+            </motion.div>
           </div>
+        </div>
 
-          {/* Name + role + bio */}
-          <div className="flex-1 text-center sm:text-left">
+        {/* Bottom fade */}
+        <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-[#0f0f0f] to-transparent pointer-events-none" />
+      </section>
 
-            {/* Role badge */}
+      {/* ── STATS BENTO ───────────────────────────────────────────────────── */}
+      <section className="max-w-screen-xl mx-auto px-5 sm:px-8 pb-24">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center gap-3 mb-8"
+        >
+          <div className="h-px flex-1 bg-white/8" />
+          <span className="text-[11px] font-black uppercase tracking-[0.22em] text-white/25">Dalam Angka</span>
+          <div className="h-px flex-1 bg-white/8" />
+        </motion.div>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
+          {STATS.map((s, i) => (
+            <motion.div
+              key={s.label}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.45, delay: i * 0.08 }}
+            >
+              <StatCard {...s} />
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Values grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.5 }}
+          className="mb-6"
+        >
+          <h2 className="text-2xl sm:text-3xl font-black text-white mb-1">Nilai & Filosofi</h2>
+          <p className="text-white/35 text-sm">Prinsip-prinsip yang menghidupkan setiap kata yang aku tulis.</p>
+        </motion.div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {VALUES.map((v, i) => (
+            <motion.div
+              key={v.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.45, delay: i * 0.07 }}
+            >
+              <ValueCard {...v} />
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── TIMELINE ──────────────────────────────────────────────────────── */}
+      <section className="max-w-screen-xl mx-auto px-5 sm:px-8 pb-28">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-16"
+        >
+          <span className="text-[11px] font-black uppercase tracking-[0.22em] text-violet-400/70">
+            Perjalanan Cerita
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-black text-white mt-2 mb-3">
+            Dari Satu Baris<br />
             <span
-              className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-[0.1em] uppercase text-slate-400 mb-3"
               style={{
-                background:   'rgba(0,0,0,0.04)',
-                border:       '1px solid rgba(0,0,0,0.05)',
-                padding:      '3px 10px',
-                borderRadius: '99px',
+                background: "linear-gradient(135deg, rgba(167,139,250,1), rgba(244,114,182,0.9))",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
               }}
             >
-              <PenLine size={10} strokeWidth={2.5} aria-hidden="true" />
-              Penulis &amp; Blogger
+              Menjadi Ribuan Halaman
             </span>
+          </h2>
+          <p className="text-white/35 text-sm max-w-md mx-auto">
+            Setiap karya besar dimulai dari satu langkah kecil yang berani.
+          </p>
+        </motion.div>
 
-            {/* Name */}
-            <h1
-              className="font-display font-bold text-slate-900 mb-3"
-              style={{ fontSize: 'clamp(1.8rem, 4vw, 2.4rem)', letterSpacing: '-0.03em', lineHeight: 1.1 }}
-            >
-              {siteTitle}
-            </h1>
-
-            {/* Bio */}
-            <p className="text-slate-500 text-[15px] leading-[1.75] max-w-xl">
-              {bio}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          STATS ROW
-      ══════════════════════════════════════════════════════════════════ */}
-      <div className="glass-panel px-8 py-6 mb-5">
-        <div className="grid grid-cols-3 divide-x divide-slate-100">
-          <StatItem value={totalPosts.toString()} label="Artikel" />
-          <StatItem value="2+" label="Tahun menulis" />
-          <StatItem value="∞" label="Cerita untuk dibagi" />
-        </div>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          TWO-COLUMN: Values + Contact
-      ══════════════════════════════════════════════════════════════════ */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-
-        {/* ── Writing Values ────────────────────────────────────────── */}
-        <div className="glass-panel p-7 flex flex-col gap-6">
-
-          {/* Heading */}
-          <div>
-            <p className="text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-400 mb-1">
-              Cara menulis
-            </p>
-            <h2 className="font-display text-[1.25rem] font-bold text-slate-900 tracking-tight">
-              Nilai di Balik Setiap Kata
-            </h2>
+        {/* Timeline */}
+        <div className="relative">
+          {/* Vertical spine line */}
+          <div className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2">
+            <motion.div
+              initial={{ scaleY: 0 }}
+              whileInView={{ scaleY: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.2, ease: "easeInOut" }}
+              className="w-full h-full origin-top bg-gradient-to-b from-violet-500/60 via-pink-500/40 to-transparent"
+            />
           </div>
 
-          {/* Value items */}
-          <div className="flex flex-col gap-5">
-            {WRITING_VALUES.map(({ icon: Icon, title, body }) => (
-              <div key={title} className="flex gap-3.5 items-start">
-                <div
-                  className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
+          <div className="flex flex-col gap-10">
+            {TIMELINE.map((item, i) => (
+              <TimelineItem key={item.year} item={item} index={i} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CONNECT TERMINAL ──────────────────────────────────────────────── */}
+      <section className="max-w-screen-xl mx-auto px-5 sm:px-8 pb-28">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="relative rounded-3xl overflow-hidden"
+          style={{
+            background: "rgba(255,255,255,0.025)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            backdropFilter: "blur(24px)",
+          }}
+        >
+          {/* Inner glow */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] rounded-full blur-[80px] opacity-20 pointer-events-none"
+            style={{ background: "linear-gradient(135deg, rgba(139,92,246,1), rgba(244,114,182,0.8))" }} />
+          <Noise />
+
+          {/* Terminal top bar */}
+          <div className="relative flex items-center gap-2 px-5 py-3.5 border-b border-white/8">
+            <div className="w-3 h-3 rounded-full bg-red-500/60" />
+            <div className="w-3 h-3 rounded-full bg-amber-500/60" />
+            <div className="w-3 h-3 rounded-full bg-emerald-500/60" />
+            <span className="ml-3 text-white/20 text-[10px] font-mono tracking-wider">
+              kakrahma.id — kontak.sh
+            </span>
+          </div>
+
+          <div className="relative p-8 sm:p-14">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+
+              {/* Left copy */}
+              <div>
+                <h2 className="text-3xl sm:text-4xl font-black text-white mb-4 leading-tight">
+                  Mari Saling
+                  <br />
+                  <span
+                    style={{
+                      background: "linear-gradient(135deg, rgba(167,139,250,1), rgba(244,114,182,0.9))",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                    }}
+                  >
+                    Sapa 👋
+                  </span>
+                </h2>
+                <p className="text-white/40 text-sm leading-relaxed max-w-sm mb-8">
+                  Punya pertanyaan, ide kolaborasi, atau sekadar ingin berbagi cerita?
+                  Pintuku selalu terbuka. Aku membalas setiap pesan dengan sepenuh hati.
+                </p>
+
+                {/* Pulse send button */}
+                <motion.a
+                  href="mailto:hi@kakrahma.id"
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl text-sm font-bold text-white overflow-hidden"
                   style={{
-                    background: 'rgba(248,250,252,0.95)',
-                    border:     '1px solid rgba(226,232,240,0.80)',
-                    boxShadow:  '0 1px 4px rgba(0,0,0,0.03)',
+                    background: "linear-gradient(135deg, rgba(139,92,246,0.9), rgba(244,114,182,0.8))",
                   }}
                 >
-                  <Icon size={14} strokeWidth={2} className="text-slate-500" aria-hidden="true" />
-                </div>
-                <div>
-                  <p className="text-[13.5px] font-semibold text-slate-800 mb-0.5">{title}</p>
-                  <p className="text-[13px] text-slate-500 leading-relaxed">{body}</p>
-                </div>
+                  {/* Pulsing aura */}
+                  <motion.span
+                    className="absolute inset-0 rounded-2xl pointer-events-none"
+                    animate={{ opacity: [0.4, 0.8, 0.4], scale: [1, 1.04, 1] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ boxShadow: "0 0 28px rgba(139,92,246,0.6)" }}
+                  />
+                  <Mail size={15} />
+                  Kirim Pesan
+                  <ArrowUpRight size={13} className="opacity-70" />
+                </motion.a>
               </div>
-            ))}
+
+              {/* Right — Social links */}
+              <div className="grid grid-cols-1 gap-3">
+                {SOCIALS.map(({ icon: Icon, label, handle, href }, i) => (
+                  <motion.a
+                    key={label}
+                    href={href}
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: i * 0.07 }}
+                    whileHover={{ x: 4, borderColor: "rgba(139,92,246,0.4)" }}
+                    className="flex items-center gap-4 bg-white/[0.03] border border-white/8 rounded-xl px-4 py-3.5 group transition-colors duration-200"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/8 flex items-center justify-center group-hover:bg-violet-500/10 group-hover:border-violet-500/20 transition-all">
+                      <Icon size={16} className="text-white/40 group-hover:text-violet-400 transition-colors" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-white/60 text-[10px] uppercase tracking-widest font-semibold">{label}</div>
+                      <div className="text-white text-sm font-semibold truncate">{handle}</div>
+                    </div>
+                    <ArrowUpRight size={14} className="text-white/20 group-hover:text-violet-400 transition-colors flex-shrink-0" />
+                  </motion.a>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-
-        {/* ── Contact / Social ──────────────────────────────────────── */}
-        <div className="glass-panel p-7 flex flex-col gap-6">
-
-          {/* Heading */}
-          <div>
-            <p className="text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-400 mb-1">
-              Terhubung
-            </p>
-            <h2 className="font-display text-[1.25rem] font-bold text-slate-900 tracking-tight">
-              Mari Saling Sapa
-            </h2>
-          </div>
-
-          {/* Intro text */}
-          <p className="text-[13.5px] text-slate-500 leading-relaxed -mt-2">
-            Punya pertanyaan, kolaborasi, atau hanya ingin berbagi cerita? Saya selalu senang mendengar kabar dari pembaca.
-          </p>
-
-          {/* Social buttons */}
-          <div className="flex flex-col gap-2.5">
-            {displaySocials.map((soc) => (
-              <SocialBtn key={soc.label} {...soc} />
-            ))}
-          </div>
-
-          {/* Separator */}
-          <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
-            <div className="w-1 h-1 rounded-full bg-slate-300" />
-            <div className="flex-1 h-px bg-gradient-to-l from-transparent via-slate-200 to-transparent" />
-          </div>
-
-          {/* Response note */}
-          <p className="text-[12px] text-slate-400 leading-relaxed text-center">
-            Biasanya membalas dalam <span className="font-semibold text-slate-500">1–2 hari kerja</span>.
-            <br />Semua pesan dibaca dengan sepenuh hati.
-          </p>
-        </div>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          WRITING CTA — dark panel
-      ══════════════════════════════════════════════════════════════════ */}
-      <div
-        className="mt-5 rounded-[20px] px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-6"
-        style={{
-          background: 'linear-gradient(145deg, rgba(15,23,42,0.94) 0%, rgba(51,65,85,0.96) 100%)',
-          border:     '1px solid rgba(255,255,255,0.06)',
-          boxShadow:  '0 20px 60px -15px rgba(15,23,42,0.20), inset 0 1px 0 rgba(255,255,255,0.05)',
-        }}
-      >
-        <div className="text-center sm:text-left">
-          <p className="text-[11px] font-semibold tracking-[0.12em] uppercase text-white/35 mb-1.5">
-            Mulai membaca
-          </p>
-          <p className="font-display text-[1.3rem] font-semibold text-white leading-snug">
-            Jelajahi semua tulisan
-          </p>
-          <p className="text-[13px] text-white/50 mt-1.5 leading-relaxed">
-            Dari refleksi harian hingga cerita yang menghangatkan hati.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3 flex-shrink-0">
-          <Link
-            href="/archive"
-            className="flex items-center gap-2 text-[13px] font-medium text-white/60 hover:text-white/90 transition-colors duration-200 px-4 py-2.5 rounded-xl"
-            style={{ border: '1px solid rgba(255,255,255,0.12)' }}
-          >
-            Lihat Arsip
-          </Link>
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-[13.5px] font-semibold text-slate-900 px-5 py-2.5 rounded-xl glass-transition hover:opacity-90 active:scale-[0.98]"
-            style={{
-              background: '#ffffff',
-              boxShadow:  '0 4px 16px -4px rgba(255,255,255,0.25)',
-            }}
-          >
-            <BookOpen size={14} strokeWidth={2.5} aria-hidden="true" />
-            Baca Sekarang
-          </Link>
-        </div>
-      </div>
+        </motion.div>
+      </section>
 
     </div>
-  )
+  );
 }

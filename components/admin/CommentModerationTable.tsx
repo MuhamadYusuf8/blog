@@ -45,8 +45,8 @@ const tabs: {
         <path d="M8 5v3.5l2 2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
-    activeColor: 'text-amber-700',
-    activeBorder: 'border-amber-400',
+    activeColor: 'text-amber-400',
+    activeBorder: 'border-amber-500/40',
   },
   {
     key: 'approved',
@@ -56,8 +56,8 @@ const tabs: {
         <path d="M3 8l3.5 3.5L13 5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
-    activeColor: 'text-emerald-700',
-    activeBorder: 'border-emerald-400',
+    activeColor: 'text-emerald-400',
+    activeBorder: 'border-emerald-500/40',
   },
   {
     key: 'rejected',
@@ -67,8 +67,8 @@ const tabs: {
         <path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round" />
       </svg>
     ),
-    activeColor: 'text-red-600',
-    activeBorder: 'border-red-400',
+    activeColor: 'text-red-400',
+    activeBorder: 'border-red-500/40',
   },
   {
     key: 'trash',
@@ -78,8 +78,8 @@ const tabs: {
         <path d="M2 4h12M5 4V3h6v1M6 7v5M10 7v5M3 4l1 9h8l1-9" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
-    activeColor: 'text-slate-600',
-    activeBorder: 'border-slate-400',
+    activeColor: 'text-white/60',
+    activeBorder: 'border-white/20',
   },
 ]
 
@@ -176,14 +176,14 @@ export default function CommentModerationTable() {
           className="fixed top-4 right-4 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm shadow-lg transition-all"
           style={{
             background: toast.type === 'success'
-              ? 'rgba(240, 253, 244, 0.97)'
-              : 'rgba(254, 242, 242, 0.97)',
+              ? 'rgba(16, 185, 129, 0.1)'
+              : 'rgba(239, 68, 68, 0.1)',
             border: toast.type === 'success'
               ? '1px solid rgba(52,211,153,0.30)'
               : '1px solid rgba(239,68,68,0.25)',
             backdropFilter: 'blur(12px)',
             boxShadow: '0 4px 16px -4px rgba(15,23,42,0.10)',
-            color: toast.type === 'success' ? '#065f46' : '#991b1b',
+            color: toast.type === 'success' ? '#34d399' : '#f87171',
           }}
         >
           {toast.type === 'success' ? (
@@ -204,9 +204,9 @@ export default function CommentModerationTable() {
       <div
         className="rounded-2xl p-1 flex gap-0.5 overflow-x-auto"
         style={{
-          background: 'rgba(255,255,255,0.72)',
-          border: '1px solid rgba(226,232,240,0.80)',
-          backdropFilter: 'blur(8px)',
+          background: 'rgba(255,255,255,0.02)',
+          border: '1px solid rgba(255,255,255,0.05)',
+          backdropFilter: 'blur(12px)',
         }}
       >
         {tabs.map((tab) => (
@@ -215,13 +215,13 @@ export default function CommentModerationTable() {
             onClick={() => setActiveTab(tab.key)}
             className={[
               'flex items-center gap-1.5 px-4 py-2 rounded-xl text-[12.5px] font-medium whitespace-nowrap transition-all duration-150',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300/60',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/10',
               activeTab === tab.key
-                ? `bg-white shadow-[0_1px_6px_-2px_rgba(15,23,42,0.10)] border border-slate-200/80 ${tab.activeColor}`
-                : 'text-slate-400 hover:text-slate-600 hover:bg-white/60',
+                ? `bg-white/10 shadow-[0_1px_12px_rgba(255,255,255,0.05)] border border-white/10 ${tab.activeColor}`
+                : 'text-white/30 hover:text-white/70 hover:bg-white/5',
             ].join(' ')}
           >
-            <span className={activeTab === tab.key ? tab.activeColor : 'text-slate-300'}>
+            <span className={activeTab === tab.key ? tab.activeColor : 'text-white/30'}>
               {tab.icon}
             </span>
             {tab.label}
@@ -234,11 +234,11 @@ export default function CommentModerationTable() {
         <div
           className="flex items-center gap-3 rounded-xl px-4 py-2.5"
           style={{
-            background: 'rgba(241,245,249,0.90)',
-            border: '1px solid rgba(226,232,240,0.80)',
+            background: 'rgba(255,255,255,0.02)',
+            border: '1px solid rgba(255,255,255,0.05)',
           }}
         >
-          <span className="text-[12px] font-medium text-slate-500 flex-1">
+          <span className="text-[12px] font-medium text-white/50 flex-1">
             {selectedIds.size} komentar dipilih
           </span>
           <button
@@ -288,28 +288,27 @@ export default function CommentModerationTable() {
       <div
         className="rounded-2xl overflow-hidden"
         style={{
-          background: 'rgba(255,255,255,0.72)',
-          border: '1px solid rgba(226,232,240,0.80)',
-          boxShadow: '0 2px 12px -4px rgba(15,23,42,0.05)',
-          backdropFilter: 'blur(8px)',
+          background: 'rgba(255, 255, 255, 0.02)',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          backdropFilter: 'blur(12px)',
         }}
       >
         {/* Panel header */}
         <div
           className="px-5 py-4 flex items-center justify-between"
-          style={{ borderBottom: '1px solid rgba(226,232,240,0.70)' }}
+          style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
         >
           <div className="flex items-center gap-2">
             <span className={`${activeTabConfig.activeColor}`}>{activeTabConfig.icon}</span>
-            <h2 className="text-[13px] font-semibold text-slate-700">
+            <h2 className="text-[13px] font-semibold text-white/90">
               {activeTabConfig.label}
             </h2>
             {!loading && (
               <span
                 className="text-[10px] font-bold px-2 py-0.5 rounded-full"
                 style={{
-                  background: 'rgba(241,245,249,0.90)',
-                  border: '1px solid rgba(226,232,240,0.80)',
+                  background: 'rgba(255,255,255,0.02)',
+            border: '1px solid rgba(255,255,255,0.05)',
                   color: '#64748b',
                 }}
               >
@@ -320,7 +319,7 @@ export default function CommentModerationTable() {
           <button
             onClick={fetchComments}
             disabled={loading || isPending}
-            className="text-[11px] font-medium text-slate-400 hover:text-slate-600 transition-colors disabled:opacity-40"
+            className="text-[11px] font-medium text-white/30 hover:text-white/70 transition-colors disabled:opacity-40"
             aria-label="Refresh komentar"
           >
             <svg
@@ -339,8 +338,8 @@ export default function CommentModerationTable() {
             <div
               className="w-7 h-7 rounded-full border-2"
               style={{
-                borderColor: 'rgba(226,232,240,0.80)',
-                borderTopColor: '#94a3b8',
+                borderColor: 'rgba(255,255,255,0.1)',
+                borderTopColor: 'rgba(255,255,255,0.5)',
                 animation: 'spin 0.75s linear infinite',
               }}
             />
@@ -351,16 +350,16 @@ export default function CommentModerationTable() {
             <div
               className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
               style={{
-                background: 'rgba(241,245,249,0.70)',
-                border: '1px solid rgba(226,232,240,0.50)',
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid rgba(255,255,255,0.05)',
               }}
             >
-              <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" strokeWidth="1.8">
+              <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.8">
                 <path d="M2 4c0-1.1.9-2 2-2h8a2 2 0 012 2v6a2 2 0 01-2 2H6l-4 2V4z" />
               </svg>
             </div>
-            <p className="text-[13px] font-semibold text-slate-500">Tidak ada komentar di sini</p>
-            <p className="text-[11.5px] text-slate-400 mt-1">Komentar pada tab ini akan muncul di sini.</p>
+            <p className="text-[13px] font-semibold text-white/50">Tidak ada komentar di sini</p>
+            <p className="text-[11.5px] text-white/20 mt-1">Komentar pada tab ini akan muncul di sini.</p>
           </div>
         ) : (
           <table className="w-full text-sm">
@@ -368,8 +367,8 @@ export default function CommentModerationTable() {
               <tr
                 className="text-[10px] font-bold uppercase tracking-[0.12em]"
                 style={{
-                  borderBottom: '1px solid rgba(226,232,240,0.70)',
-                  color: '#94a3b8',
+                  borderBottom: '1px solid rgba(255,255,255,0.05)',
+                  color: 'rgba(255,255,255,0.3)',
                 }}
               >
                 <th className="px-5 py-3 text-left w-8">
@@ -378,7 +377,7 @@ export default function CommentModerationTable() {
                     checked={selectedIds.size === comments.length && comments.length > 0}
                     onChange={toggleSelectAll}
                     aria-label="Pilih semua komentar"
-                    className="rounded border-slate-300 text-slate-600 focus:ring-slate-300"
+                    className="rounded border-white/20 bg-white/5 text-violet-500 focus:ring-violet-500/50"
                   />
                 </th>
                 <th className="px-4 py-3 text-left">Pengirim</th>
@@ -391,9 +390,9 @@ export default function CommentModerationTable() {
               {comments.map((comment, i) => (
                 <tr
                   key={comment.id}
-                  className="group transition-colors hover:bg-slate-50/60"
+                  className="group transition-colors hover:bg-white/[0.02]"
                   style={{
-                    borderBottom: i < comments.length - 1 ? '1px solid rgba(226,232,240,0.50)' : undefined,
+                    borderBottom: i < comments.length - 1 ? '1px solid rgba(255,255,255,0.05)' : undefined,
                   }}
                 >
                   {/* Checkbox */}
@@ -403,7 +402,7 @@ export default function CommentModerationTable() {
                       checked={selectedIds.has(comment.id)}
                       onChange={() => toggleSelect(comment.id)}
                       aria-label={`Pilih komentar dari ${comment.commenter_name}`}
-                      className="rounded border-slate-300 text-slate-600 focus:ring-slate-300"
+                      className="rounded border-white/20 bg-white/5 text-violet-500 focus:ring-violet-500/50"
                     />
                   </td>
 
@@ -413,14 +412,14 @@ export default function CommentModerationTable() {
                       <div
                         className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0"
                         style={{
-                          background: 'rgba(241,245,249,0.90)',
-                          border: '1px solid rgba(226,232,240,0.80)',
-                          color: '#475569',
+                          background: 'rgba(255,255,255,0.02)',
+            border: '1px solid rgba(255,255,255,0.05)',
+                          color: 'rgba(255,255,255,0.7)',
                         }}
                       >
                         {comment.commenter_name.charAt(0).toUpperCase()}
                       </div>
-                      <span className="text-[12.5px] font-semibold text-slate-700 whitespace-nowrap">
+                      <span className="text-[12.5px] font-semibold text-white/90 whitespace-nowrap">
                         {comment.commenter_name}
                       </span>
                     </div>
@@ -428,14 +427,14 @@ export default function CommentModerationTable() {
 
                   {/* Body */}
                   <td className="px-4 py-3.5">
-                    <p className="text-[12.5px] text-slate-500 leading-snug">
+                    <p className="text-[12.5px] text-white/50 leading-snug">
                       {truncate(comment.body, 80)}
                     </p>
                   </td>
 
                   {/* Date */}
                   <td className="px-4 py-3.5 hidden md:table-cell">
-                    <span className="text-[11.5px] text-slate-400 font-medium">
+                    <span className="text-[11.5px] text-white/30 font-medium">
                       {formatDate(comment.created_at)}
                     </span>
                   </td>
@@ -454,9 +453,9 @@ export default function CommentModerationTable() {
                           disabled={isPending}
                           className="flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-all disabled:opacity-50"
                           style={{
-                            background: 'rgba(219,234,254,0.60)',
-                            border: '1px solid rgba(147,197,253,0.40)',
-                            color: '#1d4ed8',
+                            background: 'rgba(59,130,246,0.1)',
+                            border: '1px solid rgba(59,130,246,0.2)',
+                            color: '#60a5fa',
                           }}
                         >
                           <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2">

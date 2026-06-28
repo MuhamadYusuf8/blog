@@ -1,13 +1,14 @@
 /**
- * app/admin/layout.tsx — Admin Shell Layout (Pearl White Edition)
- * Light glassmorphism shell, selaras dengan public blog.
+ * app/admin/layout.tsx — Admin Dark Shell
+ * Sidebar dirender di sini agar konsisten di semua halaman admin.
+ * Background gelap dipaksakan sejak SSR melalui <style> di <head>.
  */
 
 import type React from 'react'
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
-import { AdminSidebar } from '@/components/admin/AdminSidebar'
+import { AdminShell } from '@/components/admin/AdminShell'
 
 export default async function AdminLayout({
   children,
@@ -16,19 +17,15 @@ export default async function AdminLayout({
 }) {
   const pathname = headers().get('x-pathname') || ''
 
+  // Halaman login: no shell, no auth check
   if (pathname === '/admin/login') {
     return <>{children}</>
   }
 
   const supabase = createServerSupabaseClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/admin/login')
-  }
+  if (!user) redirect('/admin/login')
 
   const { count: pendingCount } = await supabase
     .from('comments')
@@ -37,26 +34,26 @@ export default async function AdminLayout({
     .is('deleted_at', null)
 
   return (
-    /*
-     * Pearl White shell:
-     * - Background: #f8fafc dengan subtle gradient overlay (sama dengan preview HTML)
-     * - Teks default: slate-800 (gelap, bukan putih)
-     * - Tidak ada bg-gray-950 / dark mode
-     */
-    <div
-      className="min-h-dvh text-slate-800 flex"
-      style={{
-        background: 'linear-gradient(135deg, rgba(226,232,240,0.35) 0%, transparent 50%), #f8fafc',
-      }}
-    >
-      <AdminSidebar pendingCommentCount={pendingCount ?? 0} />
-
-      {/* Main content — offset 200px (lebar sidebar desktop) */}
-      <div className="flex-1 flex flex-col min-w-0 lg:ml-[200px]">
-        <main className="flex-1 p-6 md:p-8 overflow-auto">
-          {children}
-        </main>
-      </div>
-    </div>
+    <>
+      {/*
+        Inject dark background CSS at the <head> level for admin routes.
+        This fires before page render so there's zero flash-of-white,
+        even though site_settings applies a body inline style via RootLayout.
+      */}
+      <style
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{
+          __html: `
+            body {
+              background-color: #0a0a0f !important;
+              background-image: none !important;
+            }
+          `,
+        }}
+      />
+      <AdminShell pendingCommentCount={pendingCount ?? 0}>
+        {children}
+      </AdminShell>
+    </>
   )
 }

@@ -57,29 +57,29 @@ export default function BackgroundChanger({ currentType, currentValue }: Backgro
     <div
       className="rounded-2xl overflow-hidden"
       style={{
-        background: 'rgba(255,255,255,0.72)',
-        border: '1px solid rgba(226,232,240,0.80)',
-        boxShadow: '0 2px 12px -4px rgba(15,23,42,0.05)',
-        backdropFilter: 'blur(8px)',
+        background: 'rgba(255, 255, 255, 0.02)',
+        border: '1px solid rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(12px)',
       }}
     >
       {/* ── Panel header ──────────────────────────────────────────────── */}
       <div
         className="px-5 py-4 flex items-center gap-2"
-        style={{ borderBottom: '1px solid rgba(226,232,240,0.70)' }}
+        style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}
       >
         <div
           className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-          style={{ background: 'rgba(241,245,249,0.90)', border: '1px solid rgba(226,232,240,0.80)' }}
+          style={{ background: 'rgba(255, 255, 255, 0.04)',
+          border: '1px solid rgba(255, 255, 255, 0.08)' }}
           aria-hidden="true"
         >
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#64748b" strokeWidth="2">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="rgba(255, 255, 255, 0.4)" strokeWidth="2">
             <rect x="1" y="1" width="14" height="14" rx="2" />
             <circle cx="5.5" cy="5.5" r="1.5" />
             <path d="M1 11l4-4 3 3 3-3 4 4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
-        <h2 className="text-[13px] font-semibold text-slate-700">Background Situs</h2>
+        <h2 className="text-[13px] font-semibold text-white/90">Background Situs</h2>
       </div>
 
       <div className="p-5 space-y-5">
@@ -88,8 +88,8 @@ export default function BackgroundChanger({ currentType, currentValue }: Backgro
         <div
           className="inline-flex rounded-xl p-1 gap-0.5"
           style={{
-            background: 'rgba(241,245,249,0.90)',
-            border: '1px solid rgba(226,232,240,0.80)',
+            background: 'rgba(255, 255, 255, 0.04)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           }}
         >
           {(['default', 'image', 'color'] as TabType[]).map((tab) => (
@@ -99,8 +99,8 @@ export default function BackgroundChanger({ currentType, currentValue }: Backgro
               className={[
                 'flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-150',
                 activeTab === tab
-                  ? 'bg-white shadow-[0_1px_4px_-1px_rgba(15,23,42,0.10)] border border-slate-200/80 text-slate-700'
-                  : 'text-slate-400 hover:text-slate-600',
+                  ? 'bg-white/10 shadow-[0_1px_8px_rgba(255,255,255,0.05)] border border-white/10 text-white/90'
+                  : 'text-white/30 hover:text-white/70 hover:bg-white/5',
               ].join(' ')}
             >
               {tab === 'default' ? (
@@ -135,7 +135,7 @@ export default function BackgroundChanger({ currentType, currentValue }: Backgro
         {/* ── Default tab ─────────────────────────────────────────────────── */}
         {activeTab === 'default' && (
           <div className="space-y-3">
-            <p className="text-[12px] text-slate-400">
+            <p className="text-[12px] text-white/30">
               Situs akan menggunakan background tema Pearl White bawaan.
             </p>
           </div>
@@ -144,7 +144,7 @@ export default function BackgroundChanger({ currentType, currentValue }: Backgro
         {/* ── Image tab ─────────────────────────────────────────────────── */}
         {activeTab === 'image' && (
           <div className="space-y-3">
-            <p className="text-[12px] text-slate-400">
+            <p className="text-[12px] text-white/30">
               Upload gambar untuk dijadikan background situs.
             </p>
             <ImageUploader
@@ -157,14 +157,14 @@ export default function BackgroundChanger({ currentType, currentValue }: Backgro
               <div
                 className="flex items-center gap-2 px-3 py-2 rounded-lg"
                 style={{
-                  background: 'rgba(241,245,249,0.70)',
-                  border: '1px solid rgba(226,232,240,0.70)',
+                  background: 'rgba(255, 255, 255, 0.02)',
+                  border: '1px solid rgba(255, 255, 255, 0.05)',
                 }}
               >
                 <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="#94a3b8" strokeWidth="2">
                   <path d="M2 4c0-1.1.9-2 2-2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V4z" />
                 </svg>
-                <p className="text-[10.5px] text-slate-400 font-medium truncate">{selectedImageUrl}</p>
+                <p className="text-[10.5px] text-white/30 font-medium truncate">{selectedImageUrl}</p>
               </div>
             )}
           </div>
@@ -173,7 +173,7 @@ export default function BackgroundChanger({ currentType, currentValue }: Backgro
         {/* ── Color tab ─────────────────────────────────────────────────── */}
         {activeTab === 'color' && (
           <div className="space-y-4">
-            <p className="text-[12px] text-slate-400">
+            <p className="text-[12px] text-white/30">
               Pilih warna solid untuk background situs.
             </p>
 
@@ -189,8 +189,8 @@ export default function BackgroundChanger({ currentType, currentValue }: Backgro
                   style={{
                     backgroundColor: hex,
                     border: selectedColor === hex
-                      ? '2.5px solid #64748b'
-                      : '2px solid rgba(226,232,240,0.80)',
+                      ? '2.5px solid #a78bfa'
+                      : '2px solid rgba(255, 255, 255, 0.1)',
                     boxShadow: selectedColor === hex
                       ? '0 0 0 3px rgba(100,116,139,0.15)'
                       : '0 1px 4px -1px rgba(15,23,42,0.15)',
@@ -204,11 +204,11 @@ export default function BackgroundChanger({ currentType, currentValue }: Backgro
             <div
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
               style={{
-                background: 'rgba(248,250,252,0.80)',
-                border: '1px solid rgba(226,232,240,0.80)',
+                background: 'rgba(255, 255, 255, 0.02)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
               }}
             >
-              <label htmlFor="custom-color" className="text-[12px] font-semibold text-slate-500 whitespace-nowrap">
+              <label htmlFor="custom-color" className="text-[12px] font-semibold text-white/40 whitespace-nowrap">
                 Kustom:
               </label>
               <div className="relative">
@@ -224,8 +224,8 @@ export default function BackgroundChanger({ currentType, currentValue }: Backgro
               <span
                 className="text-[12px] font-mono font-semibold px-2 py-1 rounded-md"
                 style={{
-                  background: 'rgba(241,245,249,0.90)',
-                  border: '1px solid rgba(226,232,240,0.80)',
+                  background: 'rgba(255, 255, 255, 0.04)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
                   color: '#475569',
                 }}
               >
@@ -237,12 +237,12 @@ export default function BackgroundChanger({ currentType, currentValue }: Backgro
 
         {/* ── Live preview ──────────────────────────────────────────────── */}
         <div className="space-y-2">
-          <p className="text-[11.5px] font-semibold text-slate-400 uppercase tracking-[0.10em]">
+          <p className="text-[11.5px] font-semibold text-white/30 uppercase tracking-[0.10em]">
             Live Preview
           </p>
           <div
             className="rounded-xl overflow-hidden"
-            style={{ border: '1px solid rgba(226,232,240,0.80)' }}
+            style={{ border: '1px solid rgba(255, 255, 255, 0.05)' }}
           >
             <BackgroundPreview type={activeTab} value={previewValue} />
           </div>
@@ -255,17 +255,17 @@ export default function BackgroundChanger({ currentType, currentValue }: Backgro
             disabled={isPending}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[12.5px] font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
-              background: 'rgba(15,23,42,0.05)',
-              border: '1px solid rgba(15,23,42,0.10)',
-              color: '#0f172a',
+              background: 'rgba(255, 255, 255, 0.04)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              color: 'rgba(255, 255, 255, 0.8)',
             }}
           >
             {isPending ? (
               <span
                 className="w-3.5 h-3.5 rounded-full border-2 inline-block"
                 style={{
-                  borderColor: 'rgba(226,232,240,0.80)',
-                  borderTopColor: '#64748b',
+                  borderColor: 'rgba(255, 255, 255, 0.1)',
+                  borderTopColor: '#a78bfa',
                   animation: 'spin 0.75s linear infinite',
                 }}
               />
@@ -282,8 +282,10 @@ export default function BackgroundChanger({ currentType, currentValue }: Backgro
               className="flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg"
               style={
                 statusMsg.type === 'success'
-                  ? { background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.22)', color: '#059669' }
-                  : { background: 'rgba(254,242,242,0.97)', border: '1px solid rgba(239,68,68,0.20)', color: '#991b1b' }
+                  ? { background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.22)', color: '#34d399' }
+                  : { background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            color: '#f87171' }
               }
             >
               {statusMsg.type === 'success' ? (

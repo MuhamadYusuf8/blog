@@ -40,8 +40,8 @@ function ToolbarButton({
         min-w-[28px] h-7 px-1.5 flex items-center justify-center rounded-md text-[12.5px] transition-all duration-150
         disabled:opacity-30 disabled:cursor-not-allowed
         ${isActive
-          ? 'bg-slate-800 text-white shadow-sm'
-          : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/60'
+          ? 'bg-violet-500/20 text-violet-300 shadow-sm border border-violet-500/30'
+          : 'text-slate-400 hover:text-slate-100 hover:bg-white/10 border border-transparent'
         }
       `}
       aria-pressed={isActive}
@@ -53,7 +53,7 @@ function ToolbarButton({
 }
 
 function ToolbarDivider() {
-  return <div className="w-px h-4 bg-slate-200 mx-1 self-center" aria-hidden="true" />
+  return <div className="w-px h-4 bg-white/10 mx-1 self-center" aria-hidden="true" />
 }
 
 export function EditorToolbar({ editor }: EditorToolbarProps) {
@@ -91,7 +91,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
   const wordCount = editor.storage.characterCount?.words?.() ?? 0
 
   return (
-    <div className="flex flex-wrap items-center gap-1 px-3 py-2 bg-slate-50/50 rounded-t-[14px]">
+    <div className="flex flex-wrap items-center gap-1 px-3 py-2 bg-[rgba(0,0,0,0.2)] border-b border-white/5">
       {/* Text formatting */}
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleBold().run()}

@@ -221,6 +221,14 @@ export function PostsTable({ activePosts, trashedPosts }: PostsTableProps) {
                       <div className="flex items-center gap-1.5 justify-end">
                         {activeTab === 'active' ? (
                           <>
+                            {/* Preview/Detail Admin */}
+                            <Link href={`/admin/posts/${post.id}`}
+                              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200"
+                              style={{ color: '#c4b5fd', background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.25)' }}
+                            >
+                              <Eye size={11} /> Lihat
+                            </Link>
+
                             {/* Edit */}
                             <Link href={`/admin/posts/${post.id}/edit`}
                               className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200"

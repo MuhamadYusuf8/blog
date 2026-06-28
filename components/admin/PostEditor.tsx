@@ -743,6 +743,17 @@ export default function PostEditor({ mode = "create", post }: { mode?: "create" 
           </div>
 
           <div className="flex items-center gap-2">
+            {mode === "edit" && post?.id && (
+              <a
+                href={`/admin/posts/${post.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 h-9 px-4 rounded-xl bg-violet-500/15 border border-violet-500/25 text-violet-300 text-sm font-medium hover:bg-violet-500/25 transition-all"
+              >
+                <Eye size={14} />
+                <span className="hidden sm:inline">Preview</span>
+              </a>
+            )}
             <button onClick={() => router.push("/admin/posts")} className="flex items-center gap-2 h-9 px-4 rounded-xl bg-white/[0.04] border border-white/8 text-white/50 text-sm font-medium hover:bg-white/[0.07] hover:text-white/70 hover:border-white/15 transition-all">
               <Save size={14} />
               <span className="hidden sm:inline">Batal</span>

@@ -1,88 +1,117 @@
 /**
- * app/(public)/loading.tsx — Public site loading skeleton
- * Shown automatically by Next.js while any public page is being server-fetched.
+ * app/(public)/loading.tsx — Public Homepage Loading Skeleton
+ * Matches the dark cinematic theme: bg-[#0f0f0f], violet/pink accents.
  */
-
 export default function PublicLoading() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-24 animate-pulse" aria-busy="true" aria-label="Memuat halaman">
+    <div className="min-h-screen bg-[#0f0f0f] animate-pulse" aria-busy="true" aria-label="Memuat halaman">
 
-      {/* Hero skeleton */}
-      <header className="mb-12 text-center">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-6 mx-auto">
-          <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />
-          <div className="h-2.5 w-32 bg-slate-200 rounded-full" />
-        </div>
-        <div className="h-10 w-72 bg-slate-200/80 rounded-xl mx-auto mb-3" />
-        <div className="h-4 w-56 bg-slate-100 rounded-full mx-auto" />
-        {/* Centerpiece placeholder */}
-        <div className="w-40 h-40 rounded-full bg-slate-100/70 mx-auto mt-8 mb-4" />
-        {/* Divider */}
-        <div className="flex items-center justify-center gap-3 mt-2">
-          <div className="h-px w-16 bg-slate-200" />
-          <div className="w-1 h-1 rounded-full bg-slate-300" />
-          <div className="h-px w-16 bg-slate-200" />
-        </div>
-      </header>
+      {/* ── Hero Carousel Skeleton ─────────────────────────────────────── */}
+      <div className="relative w-full h-[92vh] min-h-[520px] bg-zinc-900/80 overflow-hidden">
+        {/* Fake gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-[#0f0f0f]/40 to-transparent" />
 
-      {/* Two-column: Feed + Sidebar */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 items-start">
-
-        {/* Feed column */}
-        <section className="flex flex-col gap-6">
-          <div className="flex items-center gap-4 mb-2">
-            <div className="h-2.5 w-24 bg-slate-200 rounded-full" />
-            <div className="flex-1 h-px bg-slate-200/50" />
+        {/* Bottom content area */}
+        <div className="absolute bottom-16 left-0 right-0 px-4 sm:px-10 max-w-screen-xl mx-auto">
+          {/* Badge row */}
+          <div className="flex items-center gap-2 mb-3">
+            <div className="h-5 w-24 rounded-full" style={{ background: "rgba(139,92,246,0.2)" }} />
+            <div className="h-5 w-16 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }} />
           </div>
+          {/* Title lines */}
+          <div className="h-10 sm:h-14 w-3/4 max-w-lg rounded-2xl mb-2" style={{ background: "rgba(255,255,255,0.07)" }} />
+          <div className="h-10 sm:h-14 w-1/2 max-w-xs rounded-2xl mb-5" style={{ background: "rgba(255,255,255,0.04)" }} />
+          {/* Buttons */}
+          <div className="flex items-center gap-4">
+            <div className="h-11 w-36 rounded-2xl" style={{ background: "rgba(139,92,246,0.25)" }} />
+            <div className="h-4 w-28 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }} />
+          </div>
+        </div>
 
-          {/* Post card skeletons */}
-          {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              className="rounded-2xl overflow-hidden"
-              style={{
-                background: 'rgba(255,255,255,0.72)',
-                border: '1px solid rgba(226,232,240,0.70)',
-                boxShadow: '0 1px 8px -3px rgba(15,23,42,0.04)',
-              }}
-            >
-              {/* Cover image placeholder */}
-              <div className="h-44 bg-slate-100" />
-              <div className="p-5 flex flex-col gap-3">
-                <div className="h-2 w-16 bg-slate-200/80 rounded-full" />
-                <div className="h-5 bg-slate-200/70 rounded-lg w-4/5" />
-                <div className="h-3 bg-slate-100 rounded-full" />
-                <div className="h-3 bg-slate-100 rounded-full w-3/4" />
-                <div className="flex items-center gap-3 mt-1">
-                  <div className="h-2.5 w-20 bg-slate-100 rounded-full" />
-                  <div className="h-2.5 w-12 bg-slate-100 rounded-full" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </section>
+        {/* Arrow buttons */}
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full" style={{ background: "rgba(0,0,0,0.4)" }} />
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full" style={{ background: "rgba(0,0,0,0.4)" }} />
 
-        {/* Sidebar skeleton */}
-        <aside className="flex flex-col gap-4">
-          {[...Array(2)].map((_, i) => (
-            <div
-              key={i}
-              className="rounded-2xl p-5"
-              style={{
-                background: 'rgba(255,255,255,0.72)',
-                border: '1px solid rgba(226,232,240,0.70)',
-              }}
-            >
-              <div className="h-3 w-24 bg-slate-200/80 rounded-full mb-4" />
-              <div className="flex flex-col gap-3">
-                <div className="h-3 bg-slate-100 rounded-full" />
-                <div className="h-3 w-4/5 bg-slate-100 rounded-full" />
-                <div className="h-3 w-2/3 bg-slate-100 rounded-full" />
-              </div>
-            </div>
-          ))}
-        </aside>
+        {/* Progress bar */}
+        <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: "rgba(255,255,255,0.08)" }} />
+
+        {/* Dots */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+          <div className="w-6 h-2 rounded-full" style={{ background: "rgba(139,92,246,0.6)" }} />
+          <div className="w-2 h-2 rounded-full" style={{ background: "rgba(255,255,255,0.25)" }} />
+          <div className="w-2 h-2 rounded-full" style={{ background: "rgba(255,255,255,0.25)" }} />
+        </div>
       </div>
+
+      {/* ── Trending Section ───────────────────────────────────────────── */}
+      <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-10">
+        {/* Section header */}
+        <div className="flex items-end justify-between mb-5">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-5 h-5 rounded" style={{ background: "rgba(139,92,246,0.25)" }} />
+              <div className="h-6 w-44 rounded-lg" style={{ background: "rgba(255,255,255,0.07)" }} />
+            </div>
+            <div className="h-3 w-52 rounded-full" style={{ background: "rgba(255,255,255,0.04)" }} />
+          </div>
+          <div className="h-4 w-20 rounded-full" style={{ background: "rgba(255,255,255,0.04)" }} />
+        </div>
+
+        {/* Horizontal scroll cards */}
+        <div className="flex gap-4 overflow-hidden">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="flex-shrink-0 w-[160px] sm:w-[190px]">
+              <div className="aspect-[3/4] rounded-xl mb-2.5" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.06)" }} />
+              <div className="h-4 w-16 rounded-full mb-1.5" style={{ background: "rgba(139,92,246,0.15)" }} />
+              <div className="h-3 rounded-full mb-1" style={{ background: "rgba(255,255,255,0.06)" }} />
+              <div className="h-3 w-3/4 rounded-full" style={{ background: "rgba(255,255,255,0.04)" }} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6">
+        <div className="h-px" style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent)" }} />
+      </div>
+
+      {/* ── Latest Grid Section ────────────────────────────────────────── */}
+      <section className="max-w-screen-xl mx-auto px-4 sm:px-6 pb-20 pt-8">
+        {/* Section header */}
+        <div className="flex items-end justify-between mb-5">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-4 h-4 rounded" style={{ background: "rgba(139,92,246,0.25)" }} />
+              <div className="h-6 w-36 rounded-lg" style={{ background: "rgba(255,255,255,0.07)" }} />
+            </div>
+            <div className="h-3 w-56 rounded-full" style={{ background: "rgba(255,255,255,0.04)" }} />
+          </div>
+          <div className="h-4 w-20 rounded-full" style={{ background: "rgba(255,255,255,0.04)" }} />
+        </div>
+
+        {/* Filter pills */}
+        <div className="flex gap-2 mb-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className={`h-7 rounded-full flex-shrink-0 ${i === 0 ? "w-20" : "w-14"}`}
+              style={{ background: i === 0 ? "rgba(139,92,246,0.35)" : "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}
+            />
+          ))}
+        </div>
+
+        {/* Post grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          {[...Array(12)].map((_, i) => (
+            <div key={i}>
+              <div className="aspect-[3/4] rounded-xl mb-2.5" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.06)" }} />
+              <div className="h-4 w-16 rounded-full mb-1.5" style={{ background: "rgba(139,92,246,0.15)" }} />
+              <div className="h-3 rounded-full mb-1" style={{ background: "rgba(255,255,255,0.06)" }} />
+              <div className="h-3 w-3/4 rounded-full" style={{ background: "rgba(255,255,255,0.04)" }} />
+              <div className="h-2.5 w-20 rounded-full mt-1" style={{ background: "rgba(255,255,255,0.03)" }} />
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
-  )
+  );
 }

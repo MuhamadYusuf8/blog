@@ -178,7 +178,7 @@ export default async function PostPage({
   // ------------------------------------------------------------------
   // RULE 3: sanitizeHtml MUST be called before dangerouslySetInnerHTML.
   //         This applies to BOTH the public path AND the Draft Mode path.
-  //         Sanitisation is never conditional or skipped.
+  //         Sanitisation is never conditional or skipped.2
   // ------------------------------------------------------------------
   const sanitizedHtml = sanitizeHtml(post.content_html ?? '')
 

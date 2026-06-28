@@ -32,6 +32,8 @@ import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { createServiceSupabaseClient } from '@/lib/supabase/service'
 import { sanitizeHtml } from '@/lib/utils/sanitize'
 import { estimateReadTime } from '@/lib/utils/readTime'
+import { PublicNavbar } from '@/components/public/PublicNavbar'
+import { Footer } from '@/components/public/Footer'
 import { DraftModeBanner } from '@/components/public/DraftModeBanner'
 import { ReadingProgressBar } from '@/components/public/ReadingProgressBar'
 import { ShareButtons } from '@/components/public/ShareButtons'
@@ -186,11 +188,12 @@ export default async function PostPage({
   const postUrl = `${siteUrl}/posts/${post.slug}`
 
   return (
-    <>
+    <div className="min-h-screen bg-[#0f0f0f] text-white">
+      <PublicNavbar />
       {/* Reading progress bar (client component, renders null on server) */}
       <ReadingProgressBar />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-24">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-24">
 
         {/* Draft Mode Banner — only shown when isDraft is true */}
         {isDraft && <div className="mb-8"><DraftModeBanner /></div>}
@@ -323,7 +326,8 @@ export default async function PostPage({
           </aside>
           
         </div>
-      </div>
-    </>
+      </main>
+      <Footer />
+    </div>
   )
 }

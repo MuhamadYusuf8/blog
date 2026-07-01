@@ -226,7 +226,7 @@ export function DashboardClient({ stats, recentPosts, pendingCount, todayDate }:
             <div className="w-1.5 h-1.5 rounded-full bg-violet-400" style={{ boxShadow: "0 0 6px #a78bfa" }} />
             {todayDate}
           </motion.div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-slate-50 leading-tight tracking-tight mb-2">Selamat datang, Rahma 👋</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-slate-50 leading-tight tracking-tight mb-2">Hello, its me rahmayolan</h1>
           <p className="text-slate-400 text-sm sm:text-base">Berikut ringkasan aktivitas blog kamu hari ini.</p>
         </div>
         <Link href="/admin/posts/new">

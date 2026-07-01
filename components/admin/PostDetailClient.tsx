@@ -243,7 +243,7 @@ function ArticleContent({ html }: { html: string }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, delay: 0.2 }}
-      className="post-content"
+      className="post-content journal-article"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
@@ -550,24 +550,58 @@ export default function PostDetailClient({ post }: { post: AdminPostDetail }) {
 
       {/* ── Article prose styles ─────────────────────────────────────────── */}
       <style>{`
-        .post-content {
-          color: rgba(255,255,255,0.75);
-          font-size: 1.125rem;
-          line-height: 1.9;
-          font-weight: 300;
-          letter-spacing: 0.02em;
+        .post-content,
+        .post-content .content,
+        .post-content p,
+        .post-content .content p,
+        .post-content div {
+          color: rgba(226,232,240,0.88);
+          font-size: 0.875rem !important;
+          line-height: 1.8 !important;
+          font-weight: 400;
         }
-        .post-content p { margin-bottom: 1.5rem; }
-        .post-content h1,.post-content h2,.post-content h3,.post-content h4 {
-          color: rgba(255,255,255,0.95);
-          font-weight: 900;
-          line-height: 1.2;
-          margin: 2.5rem 0 1rem;
-          letter-spacing: -0.02em;
+        .post-content p { margin-bottom: 1.25rem !important; }
+        .post-content h1, .post-content .content h1 {
+          color: #ffffff !important;
+          font-weight: 600 !important;
+          line-height: 1.5 !important;
+          margin: 1.75rem 0 0.6rem !important;
+          font-size: 1.05rem !important;
         }
-        .post-content h2 { font-size: 1.75rem; }
-        .post-content h3 { font-size: 1.35rem; }
-        .post-content h4 { font-size: 1.1rem; }
+        .post-content h2, .post-content .content h2 {
+          color: #ffffff !important;
+          font-weight: 600 !important;
+          line-height: 1.55 !important;
+          margin: 1.5rem 0 0.5rem !important;
+          font-size: 0.975rem !important;
+        }
+        .post-content h3, .post-content .content h3 {
+          color: rgba(255,255,255,0.92) !important;
+          font-weight: 600 !important;
+          line-height: 1.6 !important;
+          margin: 1.25rem 0 0.4rem !important;
+          font-size: 0.925rem !important;
+        }
+        .post-content h4, .post-content .content h4 {
+          color: rgba(255,255,255,0.88) !important;
+          font-weight: 600 !important;
+          line-height: 1.6 !important;
+          margin: 1.1rem 0 0.35rem !important;
+          font-size: 0.875rem !important;
+        }
+        .post-content .jurnal-post > h2:first-child,
+        .post-content .jurnal-subtitle {
+          font-size: 0.875rem !important;
+          font-weight: 400 !important;
+          font-family: var(--font-sans) !important;
+          font-style: italic !important;
+          line-height: 1.75 !important;
+          color: rgba(203, 213, 225, 0.85) !important;
+          margin-top: 0.4rem !important;
+          margin-bottom: 1.25rem !important;
+          padding-left: 0.875rem !important;
+          border-left: 2px solid rgba(139, 92, 246, 0.55) !important;
+        }
         .post-content a {
           color: rgba(167,139,250,0.9);
           text-decoration: underline;
@@ -582,13 +616,12 @@ export default function PostDetailClient({ post }: { post: AdminPostDetail }) {
           border: 1px solid rgba(255,255,255,0.07);
         }
         .post-content blockquote {
-          border-left: 3px solid;
-          border-image: linear-gradient(to bottom, #7c3aed, #ec4899) 1;
-          padding-left: 1.5rem;
-          margin: 2rem 0;
-          color: rgba(255,255,255,0.55);
+          border-left: 2px solid rgba(139,92,246,0.6);
+          padding-left: 1.25rem;
+          margin: 1.75rem 0;
+          color: rgba(203,213,225,0.8);
           font-style: italic;
-          font-size: 1.2rem;
+          font-size: 1rem;
         }
         .post-content ul,.post-content ol {
           padding-left: 1.5rem;

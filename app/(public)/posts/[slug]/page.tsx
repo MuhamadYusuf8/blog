@@ -240,7 +240,7 @@ export default async function PostPage({
             </div>
 
             {/* Title */}
-            <h1 className="text-white font-display font-bold text-3xl md:text-[2.8rem] leading-tight tracking-tight text-balance">
+            <h1 className="text-white font-display font-bold text-2xl sm:text-3xl md:text-[2.5rem] leading-snug md:leading-tight tracking-tight text-balance">
               {post.title}
             </h1>
 
@@ -270,7 +270,7 @@ export default async function PostPage({
              * user-submitted HTML content.
              */}
             <div
-              className="prose prose-invert prose-lg max-w-none text-slate-300 prose-headings:text-white prose-headings:font-display prose-headings:tracking-tight prose-a:text-violet-400 hover:prose-a:text-violet-300 prose-img:rounded-xl prose-img:border prose-img:border-white/10"
+              className="prose prose-invert max-w-none journal-article text-slate-300 prose-headings:text-white prose-headings:tracking-tight prose-a:text-violet-400 hover:prose-a:text-violet-300 prose-img:rounded-xl prose-img:border prose-img:border-white/10"
               dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
             />
 

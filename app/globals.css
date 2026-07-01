@@ -111,6 +111,89 @@
     border-radius: 99px;
   }
   ::-webkit-scrollbar-thumb:hover { background: rgba(124, 58, 237, 0.60); }
+
+  /* ── Journal Article Professional Typography ──────────────────────── */
+  .journal-article,
+  .journal-article .content,
+  .journal-article p,
+  .journal-article .content p,
+  .journal-article div {
+    font-size: 0.875rem !important; /* 14px refined minimalist magazine/journal size */
+    line-height: 1.8 !important;
+    color: rgba(226, 232, 240, 0.88);
+    font-weight: 400;
+  }
+  .journal-article p {
+    margin-bottom: 1.25rem !important;
+  }
+  .journal-article h1,
+  .journal-article .content h1 {
+    font-size: 1.05rem !important; /* ~16.8px */
+    font-weight: 600 !important;
+    margin-top: 1.75rem !important;
+    margin-bottom: 0.6rem !important;
+    color: #ffffff !important;
+    line-height: 1.5 !important;
+  }
+  .journal-article h2,
+  .journal-article .content h2 {
+    font-size: 0.975rem !important; /* ~15.6px */
+    font-weight: 600 !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
+    color: #ffffff !important;
+    line-height: 1.55 !important;
+  }
+  .journal-article h3,
+  .journal-article .content h3 {
+    font-size: 0.925rem !important; /* ~14.8px */
+    font-weight: 600 !important;
+    margin-top: 1.25rem !important;
+    margin-bottom: 0.4rem !important;
+    color: rgba(255, 255, 255, 0.92) !important;
+    line-height: 1.6 !important;
+  }
+  .journal-article h4,
+  .journal-article .content h4 {
+    font-size: 0.875rem !important; /* 14px */
+    font-weight: 600 !important;
+    margin-top: 1.1rem !important;
+    margin-bottom: 0.35rem !important;
+    color: rgba(255, 255, 255, 0.88) !important;
+  }
+  /* Elegant subtitle styling for Jurnal opening sentences */
+  .journal-article .jurnal-post > h2:first-child,
+  .journal-article .jurnal-subtitle {
+    font-size: 0.875rem !important; /* 14px */
+    font-weight: 400 !important;
+    font-family: var(--font-sans) !important;
+    font-style: italic !important;
+    line-height: 1.75 !important;
+    color: rgba(203, 213, 225, 0.85) !important;
+    margin-top: 0.4rem !important;
+    margin-bottom: 1.25rem !important;
+    padding-left: 0.875rem !important;
+    border-left: 2px solid rgba(139, 92, 246, 0.55) !important;
+  }
+  .journal-article blockquote,
+  .journal-article .content blockquote {
+    font-size: 0.85rem !important; /* ~13.6px */
+    font-style: italic !important;
+    line-height: 1.75 !important;
+    color: rgba(203, 213, 225, 0.8) !important;
+    border-left: 2px solid rgba(139, 92, 246, 0.6) !important;
+    padding-left: 1.1rem !important;
+    margin: 1.25rem 0 !important;
+  }
+  .journal-article ul, .journal-article ol {
+    margin-bottom: 1.25rem !important;
+    padding-left: 1.25rem !important;
+  }
+  .journal-article li {
+    font-size: 0.875rem !important;
+    margin-bottom: 0.35rem !important;
+    line-height: 1.75 !important;
+  }
 }
 
 /* ── Utilities ─────────────────────────────────────────────────────────────── */

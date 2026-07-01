@@ -454,8 +454,8 @@ function JurnalEditor({ title, setTitle, editor }: { title: string, setTitle: (t
         <textarea
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full bg-transparent text-4xl font-bold text-white/90 placeholder-white/12 outline-none resize-none leading-tight mb-6 tracking-tight"
-          placeholder="Judul tulisan Anda…"
+          className="w-full bg-transparent text-lg font-normal text-white/80 placeholder-white/25 outline-none resize-none leading-relaxed mb-6 italic border-l-2 border-violet-500/50 pl-3.5 py-1"
+          placeholder="Subjudul / Pengantar singkat jurnal (opsional)…"
           rows={2}
         />
 
@@ -484,10 +484,7 @@ function JurnalEditor({ title, setTitle, editor }: { title: string, setTitle: (t
           ))}
         </div>
 
-        <div className="prose prose-invert prose-slate max-w-none text-white/70 min-h-[300px]" style={{
-            '--tw-prose-body': 'rgba(255,255,255,0.7)',
-            '--tw-prose-headings': 'rgba(255,255,255,0.9)',
-        } as any}>
+        <div className="prose prose-invert max-w-none journal-article text-white/80 min-h-[300px]">
           <EditorContent editor={editor} />
         </div>
 
@@ -676,7 +673,7 @@ export default function PostEditor({ mode = "create", post }: { mode?: "create" 
       } else if (postType === "jurnal") {
         editorState.content = editor?.getHTML() as any;
         editorState.jurnalTitle = jurnalTitle as any;
-        contentHtml = `<div class="jurnal-post"><h2>${jurnalTitle}</h2><div class="content">${editorState.content}</div></div>`;
+        contentHtml = `<div class="jurnal-post">` + (jurnalTitle ? `<div class="jurnal-subtitle">${jurnalTitle}</div>` : "") + `<div class="content">${editorState.content}</div></div>`;
       }
       
       contentHtml += `\n<div id="post-data-state" style="display:none;" data-state='${JSON.stringify(editorState).replace(/'/g, "&#39;")}'></div>`;

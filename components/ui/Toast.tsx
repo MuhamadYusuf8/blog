@@ -46,29 +46,35 @@ const ToastContext = createContext<ToastContextValue | null>(null)
 function ToastIcon({ type }: { type: ToastType }) {
   if (type === 'success') {
     return (
-      <svg className="w-5 h-5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-      </svg>
+      <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+        <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
     )
   }
   if (type === 'error') {
     return (
-      <svg className="w-5 h-5 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-      </svg>
+      <div className="w-8 h-8 rounded-xl bg-red-500/15 border border-red-500/25 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+        <svg className="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </div>
     )
   }
   return (
-    <svg className="w-5 h-5 text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
-    </svg>
+    <div className="w-8 h-8 rounded-xl bg-violet-500/15 border border-violet-500/25 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(139,92,246,0.2)]">
+      <svg className="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 0 0012 2z" />
+      </svg>
+    </div>
   )
 }
 
 const borderColorMap: Record<ToastType, string> = {
-  success: 'border-emerald-200',
-  error:   'border-red-200',
-  info:    'border-blue-200',
+  success: 'border-emerald-500/30',
+  error:   'border-red-500/30',
+  info:    'border-violet-500/30',
 }
 
 // ---------------------------------------------------------------------------
@@ -101,21 +107,21 @@ function ToastItemComponent({
       role="alert"
       aria-live="polite"
       className={`
-        flex items-start gap-3 p-4 rounded-xl
-        bg-white border ${borderColorMap[toast.type]}
-        text-slate-700 text-[13px] max-w-sm w-full shadow-2xl
+        flex items-center gap-3.5 p-4 rounded-2xl
+        bg-[#141417]/95 backdrop-blur-2xl border ${borderColorMap[toast.type]}
+        text-white max-w-sm w-full shadow-[0_16px_40px_rgba(0,0,0,0.6)]
         transition-all duration-300 ease-out
-        ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
+        ${visible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95'}
       `}
     >
       <ToastIcon type={toast.type} />
-      <p className="flex-1 font-medium leading-snug">{toast.message}</p>
+      <p className="flex-1 font-semibold text-white text-sm leading-snug">{toast.message}</p>
       <button
         onClick={() => onDismiss(toast.id)}
-        className="text-slate-400 hover:text-slate-600 transition-colors mt-0.5 shrink-0"
+        className="text-white/40 hover:text-white hover:bg-white/10 p-1.5 rounded-xl transition-all shrink-0"
         aria-label="Dismiss notification"
       >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>

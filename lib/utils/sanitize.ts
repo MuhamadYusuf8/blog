@@ -42,7 +42,7 @@ export function sanitizeHtml(html: string): string {
         'colgroup', 'col', 'caption',
         'span', 'div', 'section', 'article', 'aside', 'header', 'footer', 'nav',
       ]),
-      // Explicitly disallow dangerous tags
+      // Explicitly disallow dangerous tagss
       disallowedTagsMode: 'discard',
       allowedAttributes: {
         ...sanitize.defaults.allowedAttributes,

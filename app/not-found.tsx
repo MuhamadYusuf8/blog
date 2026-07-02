@@ -290,7 +290,7 @@ export default function NotFound() {
         transition={{ delay: 0.9, duration: 0.6 }}
         className="absolute bottom-6 text-[10px] tracking-[0.2em] uppercase text-white/12"
       >
-        KakRahma · Blog
+        Rahmayolan · Blog
       </motion.p>
     </main>
   );

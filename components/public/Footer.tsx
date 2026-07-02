@@ -52,7 +52,7 @@ const SOCIALS = [
   { icon: Instagram, label: "Instagram", href: "#" },
   { icon: Twitter,   label: "Twitter/X", href: "#" },
   { icon: Github,    label: "GitHub",    href: "#" },
-  { icon: Mail,      label: "Email",     href: "mailto:hi@kakrahma.id" },
+  { icon: Mail,      label: "Email",     href: "mailto:hi@rahmayolan.id" },
 ];
 
 // ─── NOISE ────────────────────────────────────────────────────────────────────
@@ -179,7 +179,7 @@ export function Footer() {
                 <BookOpen size={17} className="text-white" />
               </div>
               <span className="text-white font-black text-lg tracking-tight">
-                Kak<span className="text-violet-400">Rahma</span>
+                Rahma<span className="text-violet-400">yolan</span>
               </span>
             </Link>
 
@@ -274,7 +274,7 @@ export function Footer() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-white/20 text-[11px] tracking-wide text-center sm:text-left"
             >
-              © {year} KakRahma.id — Seluruh konten dilindungi hak cipta.
+              © {year} Rahmayolan.id — Seluruh konten dilindungi hak cipta.
             </motion.p>
 
             {/* Back to top */}

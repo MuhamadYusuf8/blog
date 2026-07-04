@@ -86,10 +86,23 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   const supabase = createClient()
-  const { data: settings } = await supabase
-    .from('site_settings')
-    .select('background_type, background_value, site_title, music_url, music_title, music_enabled')
-    .single()
+  const [{ data: settings }, { data: playlistData }] = await Promise.all([
+    supabase
+      .from('site_settings')
+      .select('background_type, background_value, site_title, music_url, music_title, music_enabled')
+      .single(),
+    supabase
+      .from('music_playlist')
+      .select('id, title, url, sort_order')
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: true }),
+  ])
+
+  // Build playlist: use music_playlist table, fallback to legacy music_url
+  const rawPlaylist = (playlistData ?? []) as { id: number; title: string; url: string }[]
+  const playlist = rawPlaylist.length > 0
+    ? rawPlaylist
+    : (settings?.music_url ? [{ id: 0, title: settings.music_title ?? 'Musik Latar', url: settings.music_url }] : [])
 
   const bodyStyle = buildBackgroundStyle(
     settings?.background_type,
@@ -141,11 +154,8 @@ export default async function RootLayout({
         <ToastProvider>
           {children}
         </ToastProvider>
-        {settings?.music_enabled && settings?.music_url && (
-          <MusicPlayer
-            url={settings.music_url}
-            title={settings.music_title ?? 'Musik Latar'}
-          />
+        {settings?.music_enabled && playlist.length > 0 && (
+          <MusicPlayer playlist={playlist} />
         )}
         <Analytics />
       </body>

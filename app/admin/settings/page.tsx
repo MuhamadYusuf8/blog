@@ -10,11 +10,18 @@ export const metadata: Metadata = { title: 'Pengaturan — Kak Rahma' }
 export default async function SettingsPage() {
   const supabase = createServerSupabaseClient()
 
-  const { data: settings } = await supabase
-    .from('site_settings')
-    .select('*')
-    .eq('id', 1)
-    .single()
+  const [{ data: settings }, { data: playlistData }] = await Promise.all([
+    supabase
+      .from('site_settings')
+      .select('*')
+      .eq('id', 1)
+      .single(),
+    supabase
+      .from('music_playlist')
+      .select('*')
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: true }),
+  ])
 
   const backgroundType = (settings?.background_type === 'image' ? 'image' : 'color') as 'image' | 'color'
   const backgroundValue = settings?.background_value ?? '#1a1a2e'
@@ -37,6 +44,7 @@ export default async function SettingsPage() {
         initialEnabled={settings?.music_enabled ?? false}
         initialUrl={settings?.music_url ?? ''}
         initialTitle={settings?.music_title ?? ''}
+        initialPlaylist={playlistData ?? []}
       />
       <AboutMeForm bio={settings?.bio ?? ''} avatarUrl={settings?.avatar_url ?? ''} siteTitle={settings?.site_title ?? 'Kak Rahma'} />
     </div>

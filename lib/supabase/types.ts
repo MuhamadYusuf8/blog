@@ -61,6 +61,14 @@ export type CommentRow = {
   created_at: string           // TIMESTAMPTZ
 }
 
+export type MusicPlaylistRow = {
+  id: number                   // BIGSERIAL
+  title: string
+  url: string
+  sort_order: number
+  created_at: string           // TIMESTAMPTZ
+}
+
 // ---------------------------------------------------------------------------
 // Insert types — omit server-generated fields when creating rows
 // ---------------------------------------------------------------------------
@@ -121,6 +129,19 @@ export type CommentUpdate = {
   deleted_at?: string | null
 }
 
+export type MusicPlaylistInsert = {
+  title: string
+  url: string
+  sort_order?: number
+  id?: number
+}
+
+export type MusicPlaylistUpdate = {
+  title?: string
+  url?: string
+  sort_order?: number
+}
+
 export type SiteSettingsUpdate = {
   site_title?: string
   bio?: string | null
@@ -168,6 +189,12 @@ export type Database = {
         Row: CommentRow
         Insert: CommentInsert
         Update: CommentUpdate
+        Relationships: []
+      }
+      music_playlist: {
+        Row: MusicPlaylistRow
+        Insert: MusicPlaylistInsert
+        Update: MusicPlaylistUpdate
         Relationships: []
       }
     }

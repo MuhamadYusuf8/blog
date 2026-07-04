@@ -1,13 +1,19 @@
 'use client'
 
-import React, { useRef, useState, useTransition } from 'react'
+import React, { useRef, useState, useTransition, useCallback } from 'react'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
-import { updateMusic } from '@/app/admin/settings/actions'
+import {
+  updateMusic,
+  addSongToPlaylist,
+  deleteSongFromPlaylist,
+  type PlaylistSong,
+} from '@/app/admin/settings/actions'
 
 interface MusicSettingsProps {
   initialEnabled: boolean
   initialUrl: string
   initialTitle: string
+  initialPlaylist: PlaylistSong[]
 }
 
 function formatBytes(bytes: number): string {
@@ -19,33 +25,66 @@ function formatBytes(bytes: number): string {
 const ACCEPTED_AUDIO = ['audio/mpeg', 'audio/mp3', 'audio/ogg', 'audio/wav', 'audio/aac', 'audio/flac', 'audio/mp4', 'audio/x-m4a', 'audio/m4a']
 const ACCEPTED_AUDIO_EXT = '.mp3,.ogg,.wav,.aac,.flac,.m4a,.mp4'
 
-export default function MusicSettings({
-  initialEnabled,
-  initialUrl,
-  initialTitle,
-}: MusicSettingsProps) {
+// ─── Icon helpers ──────────────────────────────────────────────────────────────
+
+function IconMusic({ size = 13, color = '#a78bfa' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
+    </svg>
+  )
+}
+
+function IconUpload({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
+    </svg>
+  )
+}
+
+function IconTrash({ size = 12 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+    </svg>
+  )
+}
+
+function IconCheck({ size = 10 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <path d="M3 8l3.5 3.5L13 5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+// ─── Sub-component: Upload Area ────────────────────────────────────────────────
+
+interface UploadAreaProps {
+  onUploadDone: (song: PlaylistSong) => void
+}
+
+function UploadArea({ onUploadDone }: UploadAreaProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const supabase = createBrowserSupabaseClient()
 
-  const [enabled, setEnabled] = useState(initialEnabled)
-  const [musicUrl, setMusicUrl] = useState(initialUrl)
-  const [musicTitle, setMusicTitle] = useState(initialTitle)
-
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'done' | 'error'>('idle')
   const [uploadError, setUploadError] = useState<string | null>(null)
-  const [uploadedFileName, setUploadedFileName] = useState<string | null>(
-    initialUrl ? initialUrl.split('/').pop() ?? null : null
-  )
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null)
   const [fileSize, setFileSize] = useState<number | null>(null)
   const [isDragging, setIsDragging] = useState(false)
-
-  const [isPending, startTransition] = useTransition()
-  const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [newTitle, setNewTitle] = useState('')
+  const [isSaving, startSaving] = useTransition()
+  const [pendingUrl, setPendingUrl] = useState<string | null>(null)
+  const [pendingName, setPendingName] = useState<string | null>(null)
 
   async function processAudioFile(file: File) {
     setUploadError(null)
     setUploadedFileName(null)
     setFileSize(null)
+    setPendingUrl(null)
+    setPendingName(null)
 
     const isValidType = ACCEPTED_AUDIO.some(t => file.type === t) || file.name.match(/\.(mp3|ogg|wav|aac|flac|m4a|mp4)$/i)
     if (!isValidType) {
@@ -71,7 +110,6 @@ export default function MusicSettings({
       .upload(filename, file, { contentType, upsert: false })
 
     if (error || !data) {
-      console.error('[MusicSettings] Upload error:', error)
       setUploadError('Upload gagal. Pastikan bucket Supabase mengizinkan file audio.')
       setUploadStatus('error')
       return
@@ -79,30 +117,224 @@ export default function MusicSettings({
 
     const { data: urlData } = supabase.storage.from('music').getPublicUrl(data.path)
     const cleanPublicUrl = encodeURI(decodeURI(urlData.publicUrl.trim()))
-    setMusicUrl(cleanPublicUrl)
+    const autoTitle = file.name.replace(/\.[^/.]+$/, '')
+
+    setPendingUrl(cleanPublicUrl)
+    setPendingName(file.name)
     setUploadedFileName(file.name)
+    setNewTitle(autoTitle)
     setUploadStatus('done')
 
-    if (!musicTitle) setMusicTitle(file.name.replace(/\.[^/.]+$/, ''))
     if (inputRef.current) inputRef.current.value = ''
   }
 
-  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (file) processAudioFile(file)
+  function handleSaveToPlaylist() {
+    if (!pendingUrl) return
+    const finalTitle = newTitle.trim() || pendingName || 'Lagu Tanpa Judul'
+    startSaving(async () => {
+      const result = await addSongToPlaylist(finalTitle, pendingUrl!)
+      if (result.success && result.song) {
+        onUploadDone(result.song)
+        setUploadStatus('idle')
+        setUploadedFileName(null)
+        setPendingUrl(null)
+        setPendingName(null)
+        setNewTitle('')
+        setFileSize(null)
+      } else {
+        setUploadError(result.error ?? 'Gagal menyimpan ke playlist.')
+      }
+    })
   }
 
-  function handleDrop(e: React.DragEvent) {
-    e.preventDefault()
-    setIsDragging(false)
-    const file = e.dataTransfer.files?.[0]
-    if (file) processAudioFile(file)
+  const isBusy = uploadStatus === 'uploading'
+
+  return (
+    <div className="space-y-3">
+      {/* Drop zone */}
+      <button
+        type="button"
+        onClick={() => !isBusy && inputRef.current?.click()}
+        onDragOver={e => { e.preventDefault(); setIsDragging(true) }}
+        onDragLeave={() => setIsDragging(false)}
+        onDrop={e => { e.preventDefault(); setIsDragging(false); const f = e.dataTransfer.files?.[0]; if (f) processAudioFile(f) }}
+        disabled={isBusy}
+        className="w-full flex flex-col items-center justify-center gap-2 px-4 py-8 rounded-xl transition-all duration-200"
+        style={{
+          background: isDragging ? 'rgba(167,139,250,0.08)' : 'rgba(255,255,255,0.02)',
+          border: `1.5px dashed ${isDragging ? 'rgba(167,139,250,0.5)' : 'rgba(255,255,255,0.1)'}`,
+          cursor: isBusy ? 'wait' : 'pointer',
+        }}
+        aria-label="Upload file musik"
+      >
+        {isBusy ? (
+          <>
+            <div className="w-6 h-6 rounded-full border-2" style={{ borderColor: 'rgba(255,255,255,0.1)', borderTopColor: '#a78bfa', animation: 'spin 0.75s linear infinite' }} />
+            <p className="text-[12px] font-medium text-slate-400">Mengupload...</p>
+          </>
+        ) : (
+          <>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(167,139,250,0.08)', border: '1px solid rgba(167,139,250,0.15)' }}>
+              <IconUpload size={18} />
+            </div>
+            <div className="text-center">
+              <p className="text-[12.5px] font-semibold text-slate-300">Klik atau seret file musik ke sini</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">MP3, OGG, WAV, AAC, FLAC, M4A</p>
+            </div>
+          </>
+        )}
+      </button>
+
+      <input ref={inputRef} type="file" accept={ACCEPTED_AUDIO_EXT} className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) processAudioFile(f) }} aria-label="Upload file musik" />
+
+      {/* After upload: enter title & save */}
+      {uploadStatus === 'done' && pendingUrl && (
+        <div className="rounded-xl p-3 space-y-3" style={{ background: 'rgba(52,211,153,0.05)', border: '1px solid rgba(52,211,153,0.2)' }}>
+          <div className="flex items-center gap-2 text-[12px]">
+            <IconCheck size={10} />
+            <span className="font-semibold text-emerald-400">File siap:</span>
+            <span className="text-white/40 truncate">{uploadedFileName}</span>
+            {fileSize && <span className="text-white/25 ml-auto flex-shrink-0">{formatBytes(fileSize)}</span>}
+          </div>
+          <input
+            type="text"
+            value={newTitle}
+            onChange={e => setNewTitle(e.target.value)}
+            placeholder="Judul lagu (opsional)"
+            className="w-full px-3 py-2 rounded-lg text-[12.5px] outline-none"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.85)' }}
+          />
+          <button
+            onClick={handleSaveToPlaylist}
+            disabled={isSaving}
+            className="w-full flex items-center justify-center gap-2 py-2 rounded-lg text-[12.5px] font-semibold transition-all"
+            style={{ background: 'linear-gradient(135deg, rgba(167,139,250,0.2), rgba(124,58,237,0.15))', border: '1px solid rgba(167,139,250,0.3)', color: '#a78bfa' }}
+          >
+            {isSaving ? (
+              <span className="w-3.5 h-3.5 rounded-full border-2 inline-block" style={{ borderColor: 'rgba(167,139,250,0.2)', borderTopColor: '#a78bfa', animation: 'spin 0.75s linear infinite' }} />
+            ) : (
+              <IconCheck size={10} />
+            )}
+            Tambahkan ke Playlist
+          </button>
+        </div>
+      )}
+
+      {uploadError && (
+        <div className="flex items-center gap-2 text-[12px] font-medium px-3 py-2 rounded-lg" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171' }}>
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="8" cy="8" r="6.5" /><path d="M8 5v3M8 11v.5" strokeLinecap="round" /></svg>
+          {uploadError}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Sub-component: Playlist List ──────────────────────────────────────────────
+
+interface PlaylistListProps {
+  songs: PlaylistSong[]
+  onDelete: (id: number) => void
+}
+
+function PlaylistList({ songs, onDelete }: PlaylistListProps) {
+  const [deletingId, setDeletingId] = useState<number | null>(null)
+  const [, startDelete] = useTransition()
+
+  function handleDelete(id: number) {
+    setDeletingId(id)
+    startDelete(async () => {
+      const result = await deleteSongFromPlaylist(id)
+      if (result.success) {
+        onDelete(id)
+      }
+      setDeletingId(null)
+    })
   }
 
-  function handleSave() {
-    const cleanUrl = musicUrl ? encodeURI(decodeURI(musicUrl.trim())) : ''
+  if (songs.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-2 py-10 text-center">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <IconMusic size={16} color="rgba(255,255,255,0.2)" />
+        </div>
+        <p className="text-[12px] text-white/25">Belum ada lagu di playlist.</p>
+        <p className="text-[11px] text-white/15">Upload lagu di tab &quot;Upload Lagu&quot;</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-2">
+      <p className="text-[11px] text-white/25 mb-3">{songs.length} lagu · Diputar berurutan dari atas ke bawah</p>
+      {songs.map((song, idx) => (
+        <div
+          key={song.id}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+          style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          {/* Number */}
+          <span className="text-[11px] font-bold w-5 text-center flex-shrink-0" style={{ color: 'rgba(167,139,250,0.5)' }}>
+            {idx + 1}
+          </span>
+
+          {/* Vinyl mini icon */}
+          <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center" style={{ background: 'radial-gradient(circle at 50% 50%, #1e1b2e 30%, #3a2d5e 60%, #2d1b4e 100%)', border: '1.5px solid rgba(167,139,250,0.2)' }}>
+            <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#a78bfa', opacity: 0.8 }} />
+          </div>
+
+          {/* Title */}
+          <div className="flex-1 min-w-0">
+            <p className="text-[12.5px] font-semibold text-white/80 truncate">{song.title}</p>
+            <p className="text-[10.5px] text-white/25 truncate mt-0.5">{song.url.split('/').pop()}</p>
+          </div>
+
+          {/* Delete */}
+          <button
+            onClick={() => handleDelete(song.id)}
+            disabled={deletingId === song.id}
+            aria-label={`Hapus ${song.title}`}
+            className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-all"
+            style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.12)', color: '#f87171', opacity: deletingId === song.id ? 0.4 : 1 }}
+          >
+            {deletingId === song.id ? (
+              <span className="w-3 h-3 rounded-full border-2 inline-block" style={{ borderColor: 'rgba(239,68,68,0.2)', borderTopColor: '#f87171', animation: 'spin 0.75s linear infinite' }} />
+            ) : (
+              <IconTrash size={11} />
+            )}
+          </button>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+export default function MusicSettings({
+  initialEnabled,
+  initialPlaylist,
+}: MusicSettingsProps) {
+  const [enabled, setEnabled] = useState(initialEnabled)
+  const [playlist, setPlaylist] = useState<PlaylistSong[]>(initialPlaylist)
+  const [activeTab, setActiveTab] = useState<'playlist' | 'upload'>('playlist')
+  const [isPending, startTransition] = useTransition()
+  const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
+  const handleUploadDone = useCallback((song: PlaylistSong) => {
+    setPlaylist(prev => [...prev, song])
+    setActiveTab('playlist')
+  }, [])
+
+  const handleDelete = useCallback((id: number) => {
+    setPlaylist(prev => prev.filter(s => s.id !== id))
+  }, [])
+
+  function handleSaveEnabled() {
     startTransition(async () => {
-      const result = await updateMusic(enabled, cleanUrl, musicTitle)
+      // Preserve existing music_url/title for backward compat (use first song in playlist or empty)
+      const firstSong = playlist[0]
+      const result = await updateMusic(enabled, firstSong?.url ?? '', firstSong?.title ?? '')
       setStatusMsg(
         result.success
           ? { type: 'success', text: 'Pengaturan musik berhasil disimpan.' }
@@ -112,305 +344,124 @@ export default function MusicSettings({
     })
   }
 
-  const isBusy = uploadStatus === 'uploading'
+  const tabs = [
+    { id: 'playlist' as const, label: `Daftar Lagu ${playlist.length > 0 ? `(${playlist.length})` : ''}` },
+    { id: 'upload' as const, label: '+ Upload Lagu' },
+  ]
 
   return (
-    <div
-      className="rounded-2xl overflow-hidden"
-      style={{
-        background: 'rgba(255, 255, 255, 0.02)',
-        border: '1px solid rgba(255, 255, 255, 0.05)',
-        backdropFilter: 'blur(12px)',
-      }}
-    >
-      {/* ── Panel header ─────────────────────────────────────────────── */}
-      <div
-        className="px-5 py-4 flex items-center justify-between gap-2"
-        style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}
-      >
+    <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(12px)' }}>
+
+      {/* ── Panel header ──────────────────────────────────────────────── */}
+      <div className="px-5 py-4 flex items-center justify-between gap-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         <div className="flex items-center gap-2">
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{
-              background: 'rgba(167,139,250,0.08)',
-              border: '1px solid rgba(167,139,250,0.2)',
-            }}
-            aria-hidden="true"
-          >
-            {/* Music note icon */}
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 18V5l12-2v13" />
-              <circle cx="6" cy="18" r="3" />
-              <circle cx="18" cy="16" r="3" />
-            </svg>
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(167,139,250,0.08)', border: '1px solid rgba(167,139,250,0.2)' }} aria-hidden="true">
+            <IconMusic size={13} />
           </div>
           <h2 className="text-[13px] font-semibold text-white/90">Musik Latar Situs</h2>
         </div>
 
-        {/* Toggle Switch */}
+        {/* Toggle */}
         <button
           type="button"
           id="music-toggle"
           role="switch"
           aria-checked={enabled}
-          onClick={() => setEnabled(prev => !prev)}
+          onClick={() => setEnabled(p => !p)}
           className="relative flex-shrink-0 transition-all duration-200"
           style={{
-            width: 40,
-            height: 22,
-            borderRadius: 999,
-            background: enabled
-              ? 'linear-gradient(135deg, #a78bfa, #7c3aed)'
-              : 'rgba(255,255,255,0.08)',
+            width: 40, height: 22, borderRadius: 999,
+            background: enabled ? 'linear-gradient(135deg, #a78bfa, #7c3aed)' : 'rgba(255,255,255,0.08)',
             border: enabled ? '1px solid rgba(167,139,250,0.4)' : '1px solid rgba(255,255,255,0.1)',
             cursor: 'pointer',
           }}
         >
-          <span
-            className="absolute top-[3px] transition-all duration-200"
-            style={{
-              width: 14,
-              height: 14,
-              borderRadius: '50%',
-              background: '#fff',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.4)',
-              left: enabled ? 22 : 3,
-            }}
-          />
+          <span className="absolute top-[3px] transition-all duration-200" style={{ width: 14, height: 14, borderRadius: '50%', background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.4)', left: enabled ? 22 : 3 }} />
         </button>
       </div>
 
       <div className="p-5 space-y-5">
-        {/* ── Status badge */}
-        <div className="flex items-center gap-2">
-          <div
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
-            style={
-              enabled
-                ? { background: 'rgba(167,139,250,0.12)', border: '1px solid rgba(167,139,250,0.25)', color: '#a78bfa' }
-                : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)' }
-            }
-          >
-            <span
-              style={{
-                width: 6, height: 6, borderRadius: '50%',
-                background: enabled ? '#a78bfa' : 'rgba(255,255,255,0.2)',
-                display: 'inline-block',
-                animation: enabled ? 'pulse-dot 2s ease-in-out infinite' : 'none',
-              }}
-            />
-            {enabled ? 'Musik Aktif' : 'Musik Nonaktif'}
-          </div>
-          <p className="text-[11.5px] text-white/25">
-            {enabled ? 'Pengunjung akan mendengar musik latar' : 'Musik tidak diputar untuk pengunjung'}
-          </p>
-        </div>
 
-        {/* ── Judul Lagu ─────────────────────────────────────────────── */}
-        <div className="space-y-1.5">
-          <label htmlFor="music-title" className="block text-[11.5px] font-semibold text-white/40 uppercase tracking-[0.08em]">
-            Judul / Nama Lagu
-          </label>
-          <input
-            id="music-title"
-            type="text"
-            value={musicTitle}
-            onChange={e => setMusicTitle(e.target.value)}
-            placeholder="cth: Lofi Study Beats — ChillHop"
-            className="w-full px-3 py-2.5 rounded-xl text-[12.5px] outline-none transition-all"
-            style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              color: 'rgba(255,255,255,0.8)',
-            }}
-          />
-        </div>
-
-        {/* ── Upload Area ────────────────────────────────────────────── */}
-        <div className="space-y-1.5">
-          <p className="text-[11.5px] font-semibold text-white/40 uppercase tracking-[0.08em]">
-            File Musik
-          </p>
-          <button
-            type="button"
-            onClick={() => !isBusy && inputRef.current?.click()}
-            onDragOver={e => { e.preventDefault(); setIsDragging(true) }}
-            onDragLeave={() => setIsDragging(false)}
-            onDrop={handleDrop}
-            disabled={isBusy}
-            className="w-full flex flex-col items-center justify-center gap-2 px-4 py-7 rounded-xl transition-all duration-200"
-            style={{
-              background: isDragging ? 'rgba(167,139,250,0.08)' : 'rgba(255,255,255,0.02)',
-              border: `1.5px dashed ${isDragging ? 'rgba(167,139,250,0.4)' : 'rgba(255,255,255,0.1)'}`,
-              cursor: isBusy ? 'wait' : 'pointer',
-            }}
-            aria-label="Upload file musik"
-          >
-            {isBusy ? (
-              <>
-                <div
-                  className="w-6 h-6 rounded-full border-2"
-                  style={{
-                    borderColor: 'rgba(255,255,255,0.1)',
-                    borderTopColor: '#a78bfa',
-                    animation: 'spin 0.75s linear infinite',
-                  }}
-                />
-                <p className="text-[12px] font-medium text-slate-400">Mengupload...</p>
-              </>
-            ) : (
-              <>
-                <div
-                  className="w-9 h-9 rounded-xl flex items-center justify-center"
-                  style={{ background: 'rgba(167,139,250,0.08)', border: '1px solid rgba(167,139,250,0.15)' }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M9 18V5l12-2v13" />
-                    <circle cx="6" cy="18" r="3" />
-                    <circle cx="18" cy="16" r="3" />
-                  </svg>
-                </div>
-                <div className="text-center">
-                  <p className="text-[12.5px] font-semibold text-slate-300">
-                    Klik untuk memilih file musik
-                  </p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    atau drag &amp; drop · MP3, OGG, WAV, AAC, FLAC, M4A
-                  </p>
-                </div>
-              </>
-            )}
-          </button>
-
-          <input
-            ref={inputRef}
-            type="file"
-            accept={ACCEPTED_AUDIO_EXT}
-            className="hidden"
-            onChange={handleFileChange}
-            aria-label="Upload file musik"
-          />
-
-          {/* Upload Success */}
-          {uploadStatus === 'done' && uploadedFileName && (
+        {/* ── Status badge ────────────────────────────────────────────── */}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
             <div
-              className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-[12px]"
-              style={{
-                background: 'rgba(52,211,153,0.06)',
-                border: '1px solid rgba(52,211,153,0.2)',
-              }}
-            >
-              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="#34d399" strokeWidth="2.2">
-                <path d="M3 8l3.5 3.5L13 5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span className="font-semibold text-emerald-400">Berhasil diupload:</span>
-              <span className="text-white/40 truncate">{uploadedFileName}</span>
-              {fileSize && <span className="text-white/25 ml-auto flex-shrink-0">{formatBytes(fileSize)}</span>}
-            </div>
-          )}
-
-          {/* Existing music URL indicator */}
-          {musicUrl && uploadStatus === 'idle' && (
-            <div
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-[11.5px]"
-              style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}
-            >
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
-              </svg>
-              <p className="text-white/30 font-medium truncate">{musicUrl.split('/').pop()}</p>
-              <span className="text-white/15 ml-auto flex-shrink-0">Terpasang</span>
-            </div>
-          )}
-
-          {/* Upload Error */}
-          {uploadError && (
-            <div
-              className="flex items-center gap-2 text-[12px] font-medium px-3 py-2 rounded-lg"
-              style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171' }}
-            >
-              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="8" cy="8" r="6.5" /><path d="M8 5v3M8 11v.5" strokeLinecap="round" />
-              </svg>
-              {uploadError}
-            </div>
-          )}
-        </div>
-
-        {/* ── Atau URL Langsung ───────────────────────────────────────── */}
-        <div className="space-y-1.5">
-          <label htmlFor="music-url" className="block text-[11.5px] font-semibold text-white/40 uppercase tracking-[0.08em]">
-            Atau Masukkan URL Audio Langsung
-          </label>
-          <input
-            id="music-url"
-            type="url"
-            value={musicUrl}
-            onChange={e => setMusicUrl(e.target.value)}
-            placeholder="https://... (URL file .mp3)"
-            className="w-full px-3 py-2.5 rounded-xl text-[12.5px] font-mono outline-none transition-all"
-            style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              color: 'rgba(255,255,255,0.6)',
-            }}
-          />
-        </div>
-
-        {/* ── Simpan Button ───────────────────────────────────────────── */}
-        <div className="flex items-center gap-3 flex-wrap pt-1">
-          <button
-            id="music-save-btn"
-            onClick={handleSave}
-            disabled={isPending}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[12.5px] font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{
-              background: isPending ? 'rgba(167,139,250,0.1)' : 'linear-gradient(135deg, rgba(167,139,250,0.15), rgba(124,58,237,0.1))',
-              border: '1px solid rgba(167,139,250,0.25)',
-              color: '#a78bfa',
-            }}
-          >
-            {isPending ? (
-              <span
-                className="w-3.5 h-3.5 rounded-full border-2 inline-block"
-                style={{ borderColor: 'rgba(167,139,250,0.2)', borderTopColor: '#a78bfa', animation: 'spin 0.75s linear infinite' }}
-              />
-            ) : (
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 8l3.5 3.5L13 5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            )}
-            Simpan Pengaturan Musik
-          </button>
-
-          {statusMsg && (
-            <div
-              className="flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
               style={
-                statusMsg.type === 'success'
-                  ? { background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.22)', color: '#34d399' }
-                  : { background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' }
+                enabled
+                  ? { background: 'rgba(167,139,250,0.12)', border: '1px solid rgba(167,139,250,0.25)', color: '#a78bfa' }
+                  : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)' }
               }
             >
-              {statusMsg.type === 'success' ? (
-                <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M3 8l3.5 3.5L13 5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              ) : (
-                <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="8" cy="8" r="6.5" /><path d="M8 5v3M8 11v.5" strokeLinecap="round" />
-                </svg>
-              )}
-              {statusMsg.text}
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: enabled ? '#a78bfa' : 'rgba(255,255,255,0.2)', display: 'inline-block', animation: enabled ? 'pulse-dot 2s ease-in-out infinite' : 'none' }} />
+              {enabled ? 'Musik Aktif' : 'Musik Nonaktif'}
             </div>
-          )}
+            <p className="text-[11.5px] text-white/25">
+              {enabled ? 'Pengunjung akan mendengar musik latar' : 'Musik tidak diputar untuk pengunjung'}
+            </p>
+          </div>
+
+          {/* Save enable/disable */}
+          <button
+            id="music-save-btn"
+            onClick={handleSaveEnabled}
+            disabled={isPending}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-semibold transition-all disabled:opacity-50"
+            style={{ background: 'linear-gradient(135deg, rgba(167,139,250,0.15), rgba(124,58,237,0.1))', border: '1px solid rgba(167,139,250,0.25)', color: '#a78bfa' }}
+          >
+            {isPending ? (
+              <span className="w-3 h-3 rounded-full border-2 inline-block" style={{ borderColor: 'rgba(167,139,250,0.2)', borderTopColor: '#a78bfa', animation: 'spin 0.75s linear infinite' }} />
+            ) : <IconCheck size={10} />}
+            Simpan
+          </button>
         </div>
 
-        <style dangerouslySetInnerHTML={{ __html: `
-          @keyframes spin { to { transform: rotate(360deg); } }
-          @keyframes pulse-dot { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
-        ` }} />
+        {statusMsg && (
+          <div
+            className="flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg"
+            style={
+              statusMsg.type === 'success'
+                ? { background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.22)', color: '#34d399' }
+                : { background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' }
+            }
+          >
+            {statusMsg.type === 'success' ? <IconCheck size={10} /> : '⚠'}
+            {statusMsg.text}
+          </div>
+        )}
+
+        {/* ── Tabs ────────────────────────────────────────────────────── */}
+        <div className="space-y-4">
+          <div className="flex gap-1 p-1 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className="flex-1 py-2 px-3 rounded-lg text-[12px] font-semibold transition-all duration-200"
+                style={
+                  activeTab === tab.id
+                    ? { background: 'rgba(167,139,250,0.15)', border: '1px solid rgba(167,139,250,0.25)', color: '#a78bfa' }
+                    : { background: 'transparent', border: '1px solid transparent', color: 'rgba(255,255,255,0.35)' }
+                }
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab content */}
+          {activeTab === 'playlist' ? (
+            <PlaylistList songs={playlist} onDelete={handleDelete} />
+          ) : (
+            <UploadArea onUploadDone={handleUploadDone} />
+          )}
+        </div>
       </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse-dot { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+      ` }} />
     </div>
   )
 }

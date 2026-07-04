@@ -226,7 +226,7 @@ export default function AboutMeForm({ bio, avatarUrl, siteTitle }: AboutMeFormPr
                 border: '1px solid rgba(255, 255, 255, 0.05)',
                 outline: 'none',
               }}
-              placeholder="Kak Rahma"
+              placeholder="Rahmayolan"
               onFocus={(e) => (e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.15)')}
               onBlur={(e) => (e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.05)')}
             />

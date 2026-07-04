@@ -156,7 +156,7 @@ export default function NotFound() {
             <BookOpen size={13} className="text-white" />
           </div>
           <span className="text-white/80 text-sm font-semibold tracking-tight group-hover:text-white transition-colors">
-            Kak<span className="text-violet-400">Rahma</span>
+            Rahma<span className="text-violet-400">yolan</span>
           </span>
         </Link>
       </div>

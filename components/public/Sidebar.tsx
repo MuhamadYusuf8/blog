@@ -84,6 +84,11 @@ export default async function Sidebar() {
   const allCats   = (categoryResult.data ?? []) as CategoryRow[]
   const recent    = (recentResult.data   ?? []) as RecentPost[]
 
+  let siteTitle = settings?.site_title ?? 'Rahmayolan'
+  if (siteTitle === 'KakRahma' || siteTitle === 'Kak Rahma' || siteTitle === 'Kak Rahma Blog') {
+    siteTitle = 'Rahmayolan'
+  }
+
   const categoryCounts = allCats.reduce<Record<string, number>>((acc, row) => {
     if (row.category) acc[row.category] = (acc[row.category] ?? 0) + 1
     return acc
@@ -113,7 +118,7 @@ export default async function Sidebar() {
             >
               <Image
                 src={settings.avatar_url}
-                alt={`Foto ${settings.site_title ?? 'Kak Rahma'}`}
+                alt={`Foto ${siteTitle}`}
                 fill
                 sizes="80px"
                 className="object-cover"
@@ -130,14 +135,14 @@ export default async function Sidebar() {
               }}
             >
               <span className="font-display text-2xl font-bold text-white">
-                {(settings?.site_title ?? 'K').charAt(0).toUpperCase()}
+                {siteTitle.charAt(0).toUpperCase()}
               </span>
             </div>
           )}
 
           <div>
             <p className="font-display font-semibold text-white text-[15px] tracking-tight">
-              {settings?.site_title ?? 'Kak Rahma'}
+              {siteTitle}
             </p>
             {settings?.bio && (
               <p className="text-slate-400 text-[13px] leading-relaxed mt-1.5">

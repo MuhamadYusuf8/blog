@@ -104,12 +104,12 @@ export function PublicNavbar() {
               />
             </div>
             <span className="font-extrabold text-[14px] tracking-tight text-white hidden sm:block">
-              Kak
+              Rahma
               <span
                 className="text-transparent bg-clip-text"
                 style={{ backgroundImage: "linear-gradient(90deg,#a78bfa,#f472b6)" }}
               >
-                Rahma
+                yolan
               </span>
             </span>
           </Link>

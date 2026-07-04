@@ -193,7 +193,7 @@ export function AdminShell({ children, pendingCommentCount = 0 }: { children: Re
         <AnimatePresence>
           {!mini && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-slate-200 truncate">Rahma</p>
+              <p className="text-xs font-semibold text-slate-200 truncate">Rahmayolan</p>
               <p className="text-xs text-slate-500 truncate">Administrator</p>
             </motion.div>
           )}

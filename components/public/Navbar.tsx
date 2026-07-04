@@ -14,7 +14,10 @@ export async function Navbar() {
     .select('site_title')
     .single()
 
-  const siteTitle = settings?.site_title ?? 'Kak Rahma Blog'
+  let siteTitle = settings?.site_title ?? 'Rahmayolan'
+  if (siteTitle === 'KakRahma' || siteTitle === 'Kak Rahma' || siteTitle === 'Kak Rahma Blog') {
+    siteTitle = 'Rahmayolan'
+  }
 
   return <NavbarClient siteTitle={siteTitle} />
 }

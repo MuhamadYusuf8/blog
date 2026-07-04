@@ -35,13 +35,13 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default:  'Kak Rahma',
-    template: '%s · Kak Rahma',
+    default:  'Rahmayolan',
+    template: '%s · Rahmayolan',
   },
-  description: 'Tulisan harian dari Kak Rahma.',
+  description: 'Tulisan harian dari Rahmayolan.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
   openGraph: {
-    siteName: 'Kak Rahma',
+    siteName: 'Rahmayolan',
     locale:   'id_ID',
     type:     'website',
   },
@@ -104,6 +104,11 @@ export default async function RootLayout({
     ? rawPlaylist
     : (settings?.music_url ? [{ id: 0, title: settings.music_title ?? 'Musik Latar', url: settings.music_url }] : [])
 
+  let siteTitle = settings?.site_title ?? 'Rahmayolan'
+  if (siteTitle === 'KakRahma' || siteTitle === 'Kak Rahma' || siteTitle === 'Kak Rahma Blog') {
+    siteTitle = 'Rahmayolan'
+  }
+
   const bodyStyle = buildBackgroundStyle(
     settings?.background_type,
     settings?.background_value,
@@ -121,7 +126,7 @@ export default async function RootLayout({
         <link
           rel="alternate"
           type="application/rss+xml"
-          title={`${settings?.site_title ?? 'Kak Rahma'} RSS Feed`}
+          title={`${siteTitle} RSS Feed`}
           href={`${siteUrl}/feed.xml`}
         />
         <link rel="sitemap" type="application/xml" href={`${siteUrl}/sitemap.xml`} />

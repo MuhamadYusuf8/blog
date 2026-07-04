@@ -160,7 +160,7 @@ export function AdminSidebar({ pendingCommentCount }: AdminSidebarProps) {
             </svg>
           </span>
           <span className="text-[13px] font-bold text-slate-900 tracking-[-0.2px]">
-            Rahma
+            Rahmayolan
           </span>
           <span className="text-[9px] font-semibold text-slate-500 bg-slate-100/90 border border-slate-200/80 rounded-[5px] px-[5px] py-[1px] ml-1">
             Admin

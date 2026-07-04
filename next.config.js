@@ -39,7 +39,7 @@ const ContentSecurityPolicy = `
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   font-src 'self' https://fonts.gstatic.com;
   img-src 'self' blob: data: https://*.supabase.co https://images.unsplash.com https://plus.unsplash.com;
-  media-src 'none';
+  media-src 'self' https://*.supabase.co;
   object-src 'none';
   frame-src https://hcaptcha.com https://*.hcaptcha.com https://www.youtube.com https://youtube.com;
   connect-src 'self' https://*.supabase.co wss://*.supabase.co https://vitals.vercel-insights.com https://hcaptcha.com https://*.hcaptcha.com;

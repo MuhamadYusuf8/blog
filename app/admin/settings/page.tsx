@@ -1,6 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import BackgroundChanger from '@/components/admin/BackgroundChanger'
 import AboutMeForm from '@/components/admin/AboutMeForm'
+import MusicSettings from '@/components/admin/MusicSettings'
 import type { Metadata } from 'next'
 import { Settings } from 'lucide-react'
 
@@ -32,6 +33,11 @@ export default async function SettingsPage() {
       </div>
 
       <BackgroundChanger currentType={backgroundType} currentValue={backgroundValue} />
+      <MusicSettings
+        initialEnabled={settings?.music_enabled ?? false}
+        initialUrl={settings?.music_url ?? ''}
+        initialTitle={settings?.music_title ?? ''}
+      />
       <AboutMeForm bio={settings?.bio ?? ''} avatarUrl={settings?.avatar_url ?? ''} siteTitle={settings?.site_title ?? 'Kak Rahma'} />
     </div>
   )

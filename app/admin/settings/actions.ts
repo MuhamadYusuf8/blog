@@ -73,3 +73,28 @@ export async function updateSiteTitle(
   revalidatePath('/', 'layout')
   return { success: true }
 }
+
+export async function updateMusic(
+  enabled: boolean,
+  url: string,
+  title: string,
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = createServerSupabaseClient()
+
+  const { error } = await supabase
+    .from('site_settings')
+    .update({
+      music_enabled: enabled,
+      music_url: url || null,
+      music_title: title || null,
+    })
+    .eq('id', 1)
+
+  if (error) {
+    console.error('[updateMusic]', error)
+    return { success: false, error: 'Gagal menyimpan pengaturan musik.' }
+  }
+
+  revalidatePath('/', 'layout')
+  return { success: true }
+}

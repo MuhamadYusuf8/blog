@@ -11,6 +11,7 @@ import { Playfair_Display, DM_Sans } from 'next/font/google'
 import { Analytics }        from '@vercel/analytics/react'
 import { createClient }     from '@/lib/supabase/server'
 import { ToastProvider }    from '@/components/ui/Toast'
+import MusicPlayer         from '@/components/ui/MusicPlayer'
 import NextTopLoader from 'nextjs-toploader'
 import './globals.css'
 
@@ -87,7 +88,7 @@ export default async function RootLayout({
   const supabase = createClient()
   const { data: settings } = await supabase
     .from('site_settings')
-    .select('background_type, background_value, site_title')
+    .select('background_type, background_value, site_title, music_url, music_title, music_enabled')
     .single()
 
   const bodyStyle = buildBackgroundStyle(
@@ -140,6 +141,12 @@ export default async function RootLayout({
         <ToastProvider>
           {children}
         </ToastProvider>
+        {settings?.music_enabled && settings?.music_url && (
+          <MusicPlayer
+            url={settings.music_url}
+            title={settings.music_title ?? 'Musik Latar'}
+          />
+        )}
         <Analytics />
       </body>
     </html>

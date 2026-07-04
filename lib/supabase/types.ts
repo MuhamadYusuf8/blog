@@ -44,6 +44,9 @@ export type SiteSettingsRow = {
   background_type: BackgroundType
   background_value: string     // CSS colour string or Supabase Storage URL
   updated_at: string           // TIMESTAMPTZ
+  music_url: string | null     // Public URL of the audio file
+  music_title: string | null   // Display name for the song / artist
+  music_enabled: boolean       // Whether the floating player is shown
 }
 
 export type CommentRow = {
@@ -124,6 +127,9 @@ export type SiteSettingsUpdate = {
   avatar_url?: string | null
   background_type?: BackgroundType
   background_value?: string
+  music_url?: string | null
+  music_title?: string | null
+  music_enabled?: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -151,6 +157,9 @@ export type Database = {
           background_type?: BackgroundType
           background_value?: string
           updated_at?: string
+          music_url?: string | null
+          music_title?: string | null
+          music_enabled?: boolean
         }
         Update: SiteSettingsUpdate
         Relationships: []
